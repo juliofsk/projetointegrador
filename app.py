@@ -42,5 +42,7 @@ def register_post():
 
     return fk.render_template("auth/login.html")
 
+
+
 if __name__ == "__main__":
     srv.run(host="localhost",port=5050, debug=True)
