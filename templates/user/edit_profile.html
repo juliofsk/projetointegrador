@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {%include 'partials/_head.html'%}
+    <style>
+
+    * {
+    margin: 0;
+    padding: 0
+    }
+
+    .card {
+        width: 350px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.5s;
+    }
+
+    .image img {
+        transition: all 0.5s
+    }
+
+    .card:hover .image img {
+        transform: scale(1.5)
+    }
+
+    .btn {
+        height: 140px;
+        width: 140px;
+        border-radius: 50%
+    }
+
+    .name {
+        font-size: 22px;
+        font-weight: bold
+    }
+
+    .idd {
+        font-size: 14px;
+        font-weight: 600
+    }
+
+    .idd1 {
+        font-size: 12px
+    }
+
+    .number {
+        font-size: 22px;
+        font-weight: bold
+    }
+
+    .follow {
+        font-size: 12px;
+        font-weight: 500;
+        color: #444444
+    }
+
+    .btn1 {
+        border-radius: 10px;
+        height: 40px;
+        width: 150px;
+        border: none;
+        background-color: #FF5678;
+        color: #ffffff;
+        font-size: 15px
+    }
+
+    .text span {
+        font-size: 13px;
+        color: #545454;
+        font-weight: 500
+    }
+
+    .icons i {
+        font-size: 19px
+    }
+
+    hr .new1 {
+        border: 1px solid
+    }
+
+    .join {
+        font-size: 14px;
+        color: #a0a0a0;
+        font-weight: bold
+    }
+
+    .date {
+        background-color: #5e5e5e
+    }
+
+    .logo{
+        margin-bottom: 8%;
+    }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="container mb-5 d-flex justify-content-center logo">
+        <img class="logo" width="70" height="70" src="/static/img/brand-icon.png" alt="icone rese">
+    </div>
+
+    <div class="container mt-5 mb-4 p-3 d-flex justify-content-center">
+        <div class="card p-4">
+            <form action="/editarperfil" method="POST" enctype="multipart/form-data">
+
+                <div class="image d-flex flex-column justify-content-center align-items-center">
+            
+                    {% if foto_usuario %}
+                    <img src="{{ url_for('static', filename='uploads/usuarios/' ~ foto_usuario) }}"
+                        height="100" width="100" class="mb-2"/>
+                    {% else %}
+                    <img src="{{ url_for('static', filename='uploads/usuarios/default.png') }}"
+                        height="100" width="100" class="mb-2"/>
+                    {% endif %}
+            
+                    <input type="file" name="foto" class="form-control-file mb-3">
+            
+                    <span>
+                        <input 
+                            type="text" 
+                            name="nome"
+                            class="form-control" 
+                            value="{{ nome_usuario }}">
+                    </span>
+            
+                    <span>
+                        <input 
+                            type="email" 
+                            name="email"
+                            class="form-control mt-2" 
+                            value="{{ email_usuario }}">
+                    </span>
+
+                    <span>
+                        <input 
+                            type="password" 
+                            name="senha"
+                            class="form-control mt-2" 
+                            value="{{ senha_usuario }}">
+                    </span>
+            
+                    <div class="d-flex mt-3">
+                        <button type="submit" class="btn btn-dark">
+                            Salvar alterações
+                        </button>
+                    </div>
+            
+                </div>
+            
+            </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

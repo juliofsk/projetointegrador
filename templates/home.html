@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {%include 'partials/_head.html'%}
+</head>
+
+<body class="container-fluid">
+
+    {%include 'partials/_header.html'%}
+
+    <p class="mt-5 text-center" id="recado">Olá! Que bom ter você aqui.</p>
+
+    <div class="text-secondary px-4 py-5 text-center mt-5">
+        <div class="py-5">
+            <h1 class="display-5 fw-bold text-white">Rese</h1>
+            <div class="col-lg-6 mx-auto">
+                <p class="fs-5 mb-4"><strong>Socializar</strong> é viver intensamente cada momento. Em festas e eventos,
+                    a
+                    energia, a música e as conversas criam conexões e lembranças únicas. Cada risada e brinde reforçam o
+                    que há
+                    de mais humano em nós:
+                    <strong>conectar, compartilhar</strong> e <strong>celebrar juntos.</strong>
+                </p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center"> <button type="button"
+                        class="btn btn-outline-primary btn-lg px-4 me-sm-3 fw-bold">Sobre</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container px-4 py-5 mt-5" id="custom-cards">
+        <h2 class="pb-2 border-bottom">Eventos próximos</h2>
+        <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 py-5">
+            {%if not session["usuario_nome"]%}
+
+            <p>Você deve estar logado para conferir os próximos eventos</p>
+         
+            {%endif%}
+     
+            {%if session["usuario_nome"]%}
+     
+             {%include 'components/_event_card.html'%}
+     
+            {%endif%}
+        </div>
+    </div>
+
+    <div class="px-4 py-5 my-5 text-center">
+        <h1 class="display-5 fw-bold text-white">Comece agora</h1>
+        <div class="col-lg-6 mx-auto">
+            <p class="lead mb-4 text-white">Crie seu evento e transforme sua ideia em algo inesquecível! Reúna pessoas, fortaleça
+                conexões e destaque sua marca com uma experiência única. Não espere — faça acontecer e surpreenda todos!
+            </p>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center"> <a 
+                {%if not session["login"]%}
+
+                href="/auth/login"
+    
+                {%endif%}
+
+                {%if session["login"]%}
+
+                href="/events/create_event"
+
+                {%endif%}
+                >
+                    <button type="button"
+                    class="btn btn-primary btn-lg px-4 gap-3">Criar</button></a></div>
+        </div>
+    </div>
+
+    <div class="container">
+        {%include "partials/_footer.html"%}
+    </div>
+
+</body>
+
+</html>

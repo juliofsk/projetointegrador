@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {%include 'partials/_head.html'%}
+        <style>
+            html,
+            body {
+            height: 90%;
+            }
+
+            .form-signin {
+            max-width: 330px;
+            padding: 1rem;
+            }
+
+            .form-signin .form-floating:focus-within {
+            z-index: 2;
+            }
+
+            .form-signin input[type="email"] {
+            margin-bottom: -1px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+            }
+
+            .form-signin input[type="password"] {
+            margin-bottom: 10px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+            }
+        </style>
+</head>
+
+<body class="d-flex align-items-center py-4 ">
+    <main class="form-signin w-100 m-auto">
+        <form action="/cadastrar" method="post"> <img class="mb-4" src="/static/img/brand-icon.png" alt="" width="70" height="70">
+            <h1 class="h3 mb-3 fw-normal">Cadastro</h1>
+            <div class="form-floating"> <input type="text" class="form-control" id="floatingInput"
+                    placeholder="nome" name="nome"> <label for="floatingInput">Usuário</label> </div>
+            <div class="form-floating"> <input type="text" class="form-control" id="floatingInput"
+                    placeholder="email" name="email"> <label for="floatingInput">Email</label> </div>
+            <div class="form-floating"> <input type="password" class="form-control" id="floatingPassword"
+                    placeholder="senha" name="senha"> <label for="floatingPassword">Senha</label> </div>
+            <button class="btn btn-primary w-100 py-2 mt-5" type="submit" value="login">Cadastrar</button>
+        </form>
+    </main>
+</body>
+
+</html>
