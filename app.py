@@ -27,6 +27,7 @@ def login_post():
     if usuario:
         fk.session["usuario_id"] = usuario[0]
         fk.session["usuario_nome"] = usuario[1]
+        fk.session["usuario_email"] = usuario[2]
         return fk.redirect("/")
     else:
         return fk.redirect("/login")
@@ -49,12 +50,12 @@ def register_post():
 def get_perfil():
     usuario_id = fk.session["usuario_id"]
     usuario_nome = fk.session["usuario_nome"]
-    usuario_email = md.get_email_usuario(usuario_id)
-    usuario_foto = md.get_foto_usuario(usuario_id)
+    usuario_email = fk.session["usuario_email"]
+    usuario_foto = md.get_foto(usuario_id)
     print(fk.session)
     try:
         usuario_nome = fk.session["usuario_nome"]
-        return fk.render_template("perfil.html", usuario_id=usuario_id, usuario_nome=usuario_nome, usuario_email=usuario_email, usuario_foto=usuario_foto)
+        return fk.render_template("user/profile.html", usuario_id=usuario_id, usuario_nome=usuario_nome, usuario_email=usuario_email, usuario_foto=usuario_foto)
     except KeyError:
         return fk.redirect("login")
     
@@ -62,21 +63,16 @@ def get_perfil():
 def get_edit_perfil():
     usuario_id = fk.session["usuario_id"]
     usuario_nome = fk.session["usuario_nome"]
-    usuario_email = md.get_email_usuario(usuario_id)
-    usuario_senha = fk.session["usuario_senha"]
-    usuario_foto = md.get_foto_usuario(usuario_id)
+    usuario_email = fk.session["usuario_email"]
+    usuario_foto = md.get_foto(usuario_id)
     print(fk.session)
-    return fk.render_template("edit_perfil.html", usuario_id=usuario_id, usuario_nome=usuario_nome, usuario_email=usuario_email, usuario_senha=usuario_senha, usuario_foto=usuario_foto)
+    return fk.render_template("user/edit_profile.html", usuario_id=usuario_id, usuario_nome=usuario_nome, usuario_email=usuario_email, usuario_foto=usuario_foto)
 
 @srv.post("/editarperfil")
 def editar_perfil():
     usuario_id = fk.session["usuario_id"]
     usuario_nome = request.form["nome"]
     usuario_email = request.form["email"]
-    usuario_senha = request.form["senha"]
-    if usuario_senha:
-    #não passo senha na sessão, corrigir    
-     fk.session["usuario_senha"] = usuario_senha
     foto = request.files.get("foto")
     print(fk.session)
      # Verifica se uma nova foto foi enviada
@@ -84,14 +80,14 @@ def editar_perfil():
         # Define o caminho para salvar a foto
         foto_path = f"{UPLOAD_FOLDER}/{usuario_id}_{foto.filename}"
         foto.save(foto_path)  # Salva a foto no servidor
-        foto_rel_path = f"uploads/usuarios/{usuario_id}"  # Caminho relativo para o banco
+        foto_rel_path = f"uploads/usuarios/{usuario_id}_{foto.filename}"  # Caminho relativo para o banco
     else:
         # Mantém a foto atual se nenhuma nova foto for enviada
-        foto_rel_path = md.get_foto_usuario(usuario_id)
+        foto_rel_path = md.get_foto(usuario_id)
 
-    md.editar_perfil(usuario_id, usuario_nome, usuario_email, usuario_senha, foto.filename)
+    md.editar_perfil(usuario_id, usuario_nome, usuario_email, foto.filename)
     fk.session["usuario_nome"] = usuario_nome
-    return fk.render_template("perfil.html", arq_foto=usuario_id)
+    return fk.render_template("user/profile.html", arq_foto=foto_rel_path)
 
 if __name__ == "__main__":
     srv.run(host="localhost",port=5050, debug=True)
