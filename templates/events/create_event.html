@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {%include 'partials/_head.html'%}
+        <style>
+            html,
+            body {
+            height: 90%;
+            }
+
+            .form-signin {
+            max-width: 330px;
+            padding: 1rem;
+            }
+
+            .form-signin .form-floating:focus-within {
+            z-index: 2;
+            }
+
+            .form-signin input[type="email"] {
+            margin-bottom: -1px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+            }
+
+            .form-signin input[type="password"] {
+            margin-bottom: 10px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+            }
+
+            #txLink {
+                visibility: hidden;
+            }
+        </style>
+</head>
+
+<body class="d-flex align-items-center py-4 ">
+    <main class="form-signin w-100 m-auto">
+        <form action="/criarEvento" method="post"> <img class="mb-4" src="/static/img/brand-icon.png" alt="" width="70" height="70">
+            <h1 class="h3 mb-3 fw-normal">Criar Evento</h1>
+            
+            <div class="form-floating"> <input type="text" class="form-control" id="floatingInput"
+                    placeholder="nome-evento" name="nome"> <label for="floatingInput">Nome</label> </div>
+
+            <div class="form-floating"> <input type="text" class="form-control" id="floatingInput"
+                    placeholder="local-evento" name="local"> <label for="floatingInput">Local</label> </div>
+
+            <div class="form-floating"> <input type="date" class="form-control" id="floatingDate"
+            placeholder="data-evento" name="data"> <label for="floatingDate">Data</label> </div>
+
+            <div class="form-floating"> <input type="time" class="form-control" id="floatingInput"
+            placeholder="hora-evento" name="hora"> <label for="floatingTime">Hora</label> </div>
+            
+            <div class="form-floating"> <input type="number" class="form-control" id="floatingLimite"
+            placeholder="limite-convidados" name="limite"> <label for="floatingLimite">Limite de convidados</label> </div>
+
+            <div class="input-group-text">
+            <input class="form-check-input mt-0" type="checkbox" value="1" name="pago" id="cbOpcional" >
+            </div>
+
+            <div class="form-floating"> <input type="text" class="form-control" id="txLink"
+            placeholder="linkpgto-evento" name="link"> <label for="floatingNumber">Link pagamento</label> </div>
+
+            <button class="btn btn-primary w-100 py-2 mt-5" type="submit" value="criar">Criar</button>
+        </form>
+    </main>
+</body>
+</html>

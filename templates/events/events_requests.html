@@ -1,0 +1,44 @@
+<style>
+    #solicitacoes{
+            background-color: rgb(39, 39, 39);
+            border-radius: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            margin-bottom: 20px;
+        }
+</style>
+
+
+
+<div id="solicitacoes">
+    {% if solicitacoes %}
+        {% for usuario in solicitacoes %}
+            <div class="row py-2">
+                <div class="col">
+                    <img class="me-4" src="static/img/experson-icon.png">    
+                    {{ usuario[1] }}
+                </div>
+                <div class="col d-flex justify-content-end">
+                    <div class="btn-group">
+                        <form action="/lista/aceitar" method="post" style="display:inline">
+                            <input type="hidden" name="evento_id" value="{{ evento[0] }}">
+                            <input type="hidden" name="usuario_id" value="{{ usuario[0] }}">
+                            <button class="btn btn-primary" type="submit">Aceitar</button>
+                        </form>
+                        <form action="/lista/recusar" method="post" style="display:inline; margin-left:6px">
+                            <input type="hidden" name="evento_id" value="{{ evento[0] }}">
+                            <input type="hidden" name="usuario_id" value="{{ usuario[0] }}">
+                            <button class="btn btn-secondary" type="submit">Recusar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="row py-2">
+            <div class="col">
+                <p class="text-muted">Nenhuma solicitação no momento.</p>
+            </div>
+        </div>
+    {% endif %}
+</div>

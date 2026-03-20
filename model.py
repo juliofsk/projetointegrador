@@ -22,8 +22,8 @@ def get_foto(usuario_id):
         cur = conn.cursor()
         cur.execute('SELECT foto FROM usuario WHERE id = ?', (usuario_id,))
         foto = cur.fetchone()[0]
-        resultado = f"static/uploads/usuarios/{usuario_id}_{foto}"
-        return resultado if resultado else None
+        resultado = f"static/uploads/usuarios/{usuario_id}.png"
+        return resultado if foto != None else None
     
 def editar_perfil(usuario_id, usuario_nome, usuario_email, usuario_foto):
     with sqlite3.connect("database.db") as conn:
@@ -35,3 +35,21 @@ def editar_perfil(usuario_id, usuario_nome, usuario_email, usuario_foto):
         dados = (usuario_nome, usuario_email, usuario_foto, usuario_id)
         cur = conn.cursor()
         cur.execute(sql_update_query, dados)
+
+def criar_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite):
+    with sqlite3.connect("rese.db") as conn:
+        sql_insert_query = '''
+        INSERT INTO evento (id_administrador, nome, local, data, hora, limite, pago, link_pagamento)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+        '''
+        dados = (administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite)
+        conn.execute(sql_insert_query, dados)
+
+def insert_lista(evento_id, usuario_id):
+    with sqlite3.connect("rese.db") as conn:
+        sql_insert_query = '''
+        INSERT INTO lista (status, usuario_id, evento_id)
+        VALUES (?, ?, ?);
+        '''
+        dados = (0, usuario_id, evento_id)
+        conn.execute(sql_insert_query, dados)

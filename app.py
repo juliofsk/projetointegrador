@@ -78,9 +78,9 @@ def editar_perfil():
      # Verifica se uma nova foto foi enviada
     if foto and foto.filename != "":
         # Define o caminho para salvar a foto
-        foto_path = f"{UPLOAD_FOLDER}/{usuario_id}_{foto.filename}"
+        foto_path = f"{UPLOAD_FOLDER}/{usuario_id}.png"
         foto.save(foto_path)  # Salva a foto no servidor
-        foto_rel_path = f"uploads/usuarios/{usuario_id}_{foto.filename}"  # Caminho relativo para o banco
+        foto_rel_path = f"uploads/usuarios/{usuario_id}.png" 
     else:
         # Mantém a foto atual se nenhuma nova foto for enviada
         foto_rel_path = md.get_foto(usuario_id)
@@ -88,6 +88,51 @@ def editar_perfil():
     md.editar_perfil(usuario_id, usuario_nome, usuario_email, foto.filename)
     fk.session["usuario_nome"] = usuario_nome
     return fk.render_template("user/profile.html", arq_foto=foto_rel_path)
+
+@srv.get("/criarEvento")
+def get_criar_evento():
+    return fk.render_template("events/create_event.html")
+
+@srv.post("/criarEvento")
+def post_evento():
+    administrador_id = fk.session["usuario_id"]
+    if not administrador_id:
+        return fk.redirect("/login")
+    evento_nome = request.form["nome"]
+    evento_local = request.form["local"]
+    evento_data = request.form["data"]
+    evento_horario = request.form["hora"]
+    evento_limite = request.form["limite"]
+    print(fk.session)
+    md.config_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite)
+    return fk.redirect(f"/evento/{quote(evento_nome)}")
+
+@srv.get("/evento/<nome>")
+def get_evento(nome):
+    nome = unquote(nome)
+    evento_id = md.get_id_evento(nome)
+    if not evento_id:
+        return "Evento não encontrado", 404
+    evento = md.get_evento(evento_id)
+    if not evento:
+        return "Evento não encontrado", 404
+    usuarios = md.usuarios_lista(evento_id)
+    solicitacoes = []
+    # se a função existir, carrega solicitacoes (status=1)
+    try:
+        solicitacoes = md.usuarios_solicitacoes(evento_id)
+    except AttributeError:
+        solicitacoes = []
+    # verifica se o usuário atual é administrador do evento
+    user_id = fk.session["user_id"]
+    is_admin = False
+    if user_id:
+        try:
+            is_admin = md.is_evento_admin(evento_id, user_id)
+        except AttributeError:
+            is_admin = False
+    return fk.render_template("evento.html", usuarios=usuarios, solicitacoes=solicitacoes, is_admin=is_admin, evento=evento)
+
 
 if __name__ == "__main__":
     srv.run(host="localhost",port=5050, debug=True)

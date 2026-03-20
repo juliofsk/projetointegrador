@@ -109,13 +109,8 @@
 
                 <div class="image d-flex flex-column justify-content-center align-items-center">
             
-                    {% if foto_usuario %}
-                    <img src="{{ url_for('static', filename='uploads/usuarios/' ~ foto_usuario) }}"
-                        height="100" width="100" class="mb-2"/>
-                    {% else %}
-                    <img src="{{ url_for('static', filename='uploads/usuarios/default.png') }}"
-                        height="70" width="70" class="mb-2"/>
-                    {% endif %}
+                    <img src="{{usuario_foto}}"
+                        height="100" width="100" class="mb-2"/> 
             
                     <div class="mb-3">
                         <input class="form-control" type="file" id="formFile" name="foto">
@@ -136,16 +131,6 @@
                             class="form-control mt-2" 
                             value="{{ usuario_email }}">
                     </span>
-
-                    <!--
-                    <span>
-                        <input 
-                            type="password" 
-                            name="senha"
-                            class="form-control mt-2" 
-                            value="{{ senha_usuario }}">
-                    </span>
-                    -->
 
                     <div class="d-flex mt-3">
                         <button type="submit" class="btn btn-dark">
