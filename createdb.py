@@ -12,8 +12,6 @@ CREATE TABLE IF NOT EXISTS evento (
 	data NUMERIC NOT NULL,
 	hora NUMERIC NOT NULL,
 	limite INTEGER NOT NULL,
-	pago INTEGER DEFAULT 1,
-	link_pagamento TEXT,
 	FOREIGN KEY (id_administrador) REFERENCES usuario (id)
 )
 ''')

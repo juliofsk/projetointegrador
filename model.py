@@ -1,5 +1,7 @@
 import sqlite3
 
+
+#FUNÇÕES USUÁRIO
 def autenticar_usuario(login, senha):
     with sqlite3.connect("database.db") as conn:
         cur = conn.cursor()
@@ -36,20 +38,92 @@ def editar_perfil(usuario_id, usuario_nome, usuario_email, usuario_foto):
         cur = conn.cursor()
         cur.execute(sql_update_query, dados)
 
+
+
+#FUNÇÕES EVENTO
+def config_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite):
+    criar_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite)
+    entralista(get_id_evento(evento_nome), administrador_id)
+
 def criar_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite):
-    with sqlite3.connect("rese.db") as conn:
+    with sqlite3.connect("database.db") as conn:
         sql_insert_query = '''
-        INSERT INTO evento (id_administrador, nome, local, data, hora, limite, pago, link_pagamento)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+        INSERT INTO evento (id_administrador, nome, local, data, hora, limite)
+        VALUES (?, ?, ?, ?, ?, ?);
         '''
         dados = (administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite)
         conn.execute(sql_insert_query, dados)
 
 def insert_lista(evento_id, usuario_id):
-    with sqlite3.connect("rese.db") as conn:
+    with sqlite3.connect("database.db") as conn:
         sql_insert_query = '''
         INSERT INTO lista (status, usuario_id, evento_id)
         VALUES (?, ?, ?);
         '''
         dados = (0, usuario_id, evento_id)
         conn.execute(sql_insert_query, dados)
+
+def entralista(evento_id, usuario_id):
+    with sqlite3.connect("rese.db") as conn:
+        sql_insert_query = '''
+        INSERT INTO lista (evento_id, usuario_id, status)
+        VALUES (?, ?, 2);
+        '''
+        cur = conn.cursor()
+        dados = (evento_id, usuario_id)
+        cur.execute(sql_insert_query, dados)
+
+def get_id_evento(evento_nome):
+    with sqlite3.connect("database.db") as conn:
+        pegar_id_evento = '''
+        SELECT id 
+        FROM evento 
+        WHERE nome = ?
+        '''
+        cur = conn.cursor()
+        cur.execute(pegar_id_evento, (evento_nome,))
+        evento = cur.fetchone()
+        return evento[0] if evento else None
+    
+def get_evento(evento_id):
+    with sqlite3.connect("database.db") as conn:
+        cur = conn.cursor()
+        cur.execute('SELECT * FROM evento WHERE id = ?', (evento_id,))
+        return cur.fetchone()
+
+def usuarios_lista(evento_id):
+    """Busca usuários com status=2 (confirmados) de um evento específico"""
+    with sqlite3.connect("database.db") as conn:
+        pesquisar_usuarios_participantes = '''
+        SELECT usuario.id, usuario.nome, usuario.email
+        FROM usuario
+        JOIN lista ON usuario.id = lista.usuario_id
+        WHERE lista.evento_id = ?
+        AND lista.status = 2
+        '''
+        cur = conn.cursor()
+        cur.execute(pesquisar_usuarios_participantes, (evento_id,))
+        usuarios = cur.fetchall()
+        return usuarios  # Retorna lista de tuplas (id, nome, email)
+
+def usuarios_solicitacoes(evento_id):
+    """Busca usuários com status=1 (solicitações) de um evento específico"""
+    with sqlite3.connect("database.db") as conn:
+        pesquisar_usuarios_solicitacoes = '''
+        SELECT usuario.id, usuario.nome, usuario.email
+        FROM usuario
+        JOIN lista ON usuario.id = lista.usuario_id
+        WHERE lista.evento_id = ?
+        AND lista.status = 1
+        '''
+        cur = conn.cursor()
+        cur.execute(pesquisar_usuarios_solicitacoes, (evento_id,))
+        usuarios = cur.fetchall()
+        return usuarios  # Retorna lista de tuplas (id, nome, email)
+
+def is_evento_admin(evento_id, usuario_id):
+    with sqlite3.connect("database.db") as conn:
+        cur = conn.cursor()
+        cur.execute('SELECT id_administrador FROM evento WHERE id = ?', (evento_id,))
+        resultado = cur.fetchone()
+        return resultado[0] == usuario_id if resultado else False

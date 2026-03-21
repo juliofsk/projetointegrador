@@ -107,10 +107,11 @@ def post_evento():
     md.config_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite)
     return fk.redirect(f"/evento/{quote(evento_nome)}")
 
-@srv.get("/evento/<nome>")
-def get_evento(nome):
-    nome = unquote(nome)
-    evento_id = md.get_id_evento(nome)
+@srv.get("/evento/<evento_nome>")
+def get_evento(evento_nome):
+    evento_nome = unquote(evento_nome)
+    evento_id = md.get_id_evento(evento_nome)
+    print(evento_id)
     if not evento_id:
         return "Evento não encontrado", 404
     evento = md.get_evento(evento_id)
@@ -124,14 +125,16 @@ def get_evento(nome):
     except AttributeError:
         solicitacoes = []
     # verifica se o usuário atual é administrador do evento
-    user_id = fk.session["user_id"]
+    usuario_id = fk.session["usuario_id"]
     is_admin = False
-    if user_id:
+    if usuario_id:
         try:
-            is_admin = md.is_evento_admin(evento_id, user_id)
+            is_admin = md.is_evento_admin(evento_id, usuario_id)
         except AttributeError:
             is_admin = False
-    return fk.render_template("evento.html", usuarios=usuarios, solicitacoes=solicitacoes, is_admin=is_admin, evento=evento)
+    print(solicitacoes)
+    print(usuarios)
+    return fk.render_template("events/event_detail.html", usuarios=usuarios, solicitacoes=solicitacoes, is_admin=is_admin, evento=evento)
 
 
 if __name__ == "__main__":

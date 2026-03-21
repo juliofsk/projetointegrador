@@ -53,15 +53,15 @@
                 conexões e destaque sua marca com uma experiência única. Não espere — faça acontecer e surpreenda todos!
             </p>
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center"> <a 
-                {%if not session["login"]%}
+                {%if not session["usuario_nome"]%}
 
-                href="/auth/login"
+                href="/login"
     
                 {%endif%}
 
-                {%if session["login"]%}
+                {%if session["usuario_nome"]%}
 
-                href="/events/create_event"
+                href="/criarEvento"
 
                 {%endif%}
                 >
