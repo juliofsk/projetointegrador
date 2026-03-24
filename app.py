@@ -3,6 +3,7 @@ from flask import Flask, request, render_template, app
 from secrets import token_hex
 import model as md
 from urllib.parse import quote, unquote
+import secrets
 
 srv = fk.Flask(__name__)
 srv.secret_key = token_hex()
@@ -53,6 +54,11 @@ def register_post():
     md.criar_usuario(usuario_nome, usuario_email, usuario_senha)
 
     return fk.render_template("auth/login.html")
+
+@srv.get("/logout")
+def get_logout():
+    del fk.session["usuario_nome"]
+    return fk.redirect("/")
 
 @srv.get("/perfil")
 def get_perfil():
@@ -111,14 +117,15 @@ def post_evento():
     evento_data = request.form["data"]
     evento_horario = request.form["hora"]
     evento_limite = request.form["limite"]
+    evento_token = secrets.token_urlsafe(22)
     print(fk.session)
-    md.config_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite)
-    return fk.redirect(f"/evento/{quote(evento_nome)}")
+    md.config_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token)
+    return fk.redirect(f"/evento/{evento_token}")
 
-@srv.get("/evento/<evento_nome>")
-def get_evento(evento_nome):
-    evento_nome = unquote(evento_nome)
-    evento_id = md.get_id_evento(evento_nome)
+@srv.get("/evento/<evento_token>")
+def get_evento(evento_token):
+    evento_id = md.get_id_evento(evento_token)
+    url = f'http://localhost:5050/evento/{evento_token}'
     print(evento_id)
     if not evento_id:
         return "Evento não encontrado", 404
@@ -142,7 +149,7 @@ def get_evento(evento_nome):
             is_admin = False
     print(solicitacoes)
     print(usuarios)
-    return fk.render_template("events/event_detail.html", usuarios=usuarios, solicitacoes=solicitacoes, is_admin=is_admin, evento=evento)
+    return fk.render_template("events/event_detail.html", usuarios=usuarios, solicitacoes=solicitacoes, is_admin=is_admin, evento=evento, url=url)
 
 @srv.post("/evento/solicitar")
 def solicitar_participacao():
@@ -168,6 +175,12 @@ def recusar_solicitacao():
         md.recusar_solicitacao(evento_id, usuario_id)
     return fk.redirect(fk.request.referrer or "/")
 
+@srv.post("/evento/deletar")
+def deletar_evento():
+    evento_id = request.form.get("evento_id")
+    if evento_id:
+        md.deletar_evento(evento_id,)
+    return fk.redirect("/")
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     {%include 'partials/_head.html'%}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <style>
         #lista{
             background-color: rgb(39, 39, 39);
@@ -30,6 +31,14 @@
 
     <div class="container d-flex flex-row align-items-center justify-content-between mt-5 mb-5">
         <div><h2 class="">{{ evento[2] }}</h2></div>
+
+        <div class="input-group mb-3" style="max-width:500px;">
+            <input type="text" class="form-control" id="linkEvento" value="{{ url }}" readonly>
+            <button class="btn btn-outline-secondary" onclick="copiar()">
+              <i class="bi bi-clipboard"></i>
+            </button>
+          </div>
+
         <form action="/evento/deletar" method="POST">
             <input type="hidden" name="evento_id" value="{{ evento[0] }}">
             <button class="btn btn-primary w-5 py-2 mt-3">Deletar evento</button>
@@ -73,3 +82,9 @@
 
 </body>
 </html>
+
+<script>
+    function copiar() {
+      navigator.clipboard.writeText(document.getElementById("linkEvento").value);
+    }
+    </script>

@@ -41,17 +41,17 @@ def editar_perfil(usuario_id, usuario_nome, usuario_email, usuario_foto):
 
 
 #FUNÇÕES EVENTO
-def config_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite):
-    criar_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite)
-    entralista(get_id_evento(evento_nome), administrador_id)
+def config_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token):
+    criar_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token)
+    entralista(get_id_evento(evento_token), administrador_id)
 
-def criar_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite):
+def criar_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token):
     with sqlite3.connect("database.db") as conn:
         sql_insert_query = '''
-        INSERT INTO evento (id_administrador, nome, local, data, hora, limite)
-        VALUES (?, ?, ?, ?, ?, ?);
+        INSERT INTO evento (id_administrador, nome, local, data, hora, limite, token)
+        VALUES (?, ?, ?, ?, ?, ?, ?);
         '''
-        dados = (administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite)
+        dados = (administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token)
         conn.execute(sql_insert_query, dados)
 
 def insert_lista(evento_id, usuario_id):
@@ -73,15 +73,15 @@ def entralista(evento_id, usuario_id):
         dados = (evento_id, usuario_id, 2)
         cur.execute(sql_insert_query, dados)
 
-def get_id_evento(evento_nome):
+def get_id_evento(evento_token):
     with sqlite3.connect("database.db") as conn:
         pegar_id_evento = '''
         SELECT id 
         FROM evento 
-        WHERE nome = ?
+        WHERE token = ?
         '''
         cur = conn.cursor()
-        cur.execute(pegar_id_evento, (evento_nome,))
+        cur.execute(pegar_id_evento, (evento_token,))
         evento = cur.fetchone()
         return evento[0] if evento else None
     
@@ -165,3 +165,11 @@ def recusar_solicitacao(evento_id, usuario_id):
     with sqlite3.connect("database.db") as conn:
         cur = conn.cursor()
         cur.execute('DELETE FROM lista WHERE evento_id = ? AND usuario_id = ?', (evento_id, usuario_id))
+
+def deletar_evento(evento_id,):
+    with sqlite3.connect("database.db") as conn:
+        cur = conn.cursor()
+        # Deleta as entradas relacionadas na tabela lista
+        cur.execute('DELETE FROM lista WHERE evento_id = ?', (evento_id,))
+        # Deleta o evento
+        cur.execute('DELETE FROM evento WHERE id = ?', (evento_id,))

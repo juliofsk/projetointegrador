@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS evento (
 	data NUMERIC NOT NULL,
 	hora NUMERIC NOT NULL,
 	limite INTEGER NOT NULL,
+    token TEXT NOT NULL,
 	FOREIGN KEY (id_administrador) REFERENCES usuario (id)
 )
 ''')
