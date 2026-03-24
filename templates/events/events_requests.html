@@ -15,7 +15,7 @@
         {% for usuario in solicitacoes %}
             <div class="row py-2">
                 <div class="col">
-                    <img class="me-4" src="static/img/experson-icon.png">    
+                    <img class="me-4" src="{{ url_for('static', filename='uploads/usuarios/' ~ usuario[0] ~ '.png') }}" width="32" height="32">    
                     {{ usuario[1] }}
                 </div>
                 <div class="col d-flex justify-content-end">

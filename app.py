@@ -12,7 +12,15 @@ srv.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @srv.get("/") #Tela inicial
 def get_home():
-    return fk.render_template("home.html")
+    eventos = []
+    try:
+        session_id = fk.session["usuario_id"]
+        eventos = md.filtrar_eventos_proximos(session_id)
+        print(eventos)     
+    except KeyError:
+        pass
+
+    return fk.render_template("home.html", eventos=eventos)
 
 @srv.get("/login") #Tela login
 def login_get():
@@ -135,6 +143,31 @@ def get_evento(evento_nome):
     print(solicitacoes)
     print(usuarios)
     return fk.render_template("events/event_detail.html", usuarios=usuarios, solicitacoes=solicitacoes, is_admin=is_admin, evento=evento)
+
+@srv.post("/evento/solicitar")
+def solicitar_participacao():
+    evento_id = request.form.get("evento_id")
+    usuario_id = fk.session["usuario_id"]
+    if evento_id and usuario_id:
+        md.solicitar_participacao(evento_id, usuario_id)
+    return fk.redirect(fk.request.referrer or "/")
+
+@srv.post("/lista/aceitar")
+def aceitar_solicitacao():
+    evento_id = request.form.get("evento_id")
+    usuario_id = request.form.get("usuario_id")
+    if evento_id and usuario_id:
+        md.aceitar_solicitacao(evento_id, usuario_id)
+    return fk.redirect(fk.request.referrer or "/")
+
+@srv.post("/lista/recusar")
+def recusar_solicitacao():
+    evento_id = request.form.get("evento_id")
+    usuario_id = request.form.get("usuario_id")
+    if evento_id and usuario_id:
+        md.recusar_solicitacao(evento_id, usuario_id)
+    return fk.redirect(fk.request.referrer or "/")
+
 
 
 if __name__ == "__main__":

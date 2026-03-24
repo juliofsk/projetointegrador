@@ -64,13 +64,13 @@ def insert_lista(evento_id, usuario_id):
         conn.execute(sql_insert_query, dados)
 
 def entralista(evento_id, usuario_id):
-    with sqlite3.connect("rese.db") as conn:
+    with sqlite3.connect("database.db") as conn:
         sql_insert_query = '''
         INSERT INTO lista (evento_id, usuario_id, status)
-        VALUES (?, ?, 2);
+        VALUES (?, ?, ?);
         '''
         cur = conn.cursor()
-        dados = (evento_id, usuario_id)
+        dados = (evento_id, usuario_id, 2)
         cur.execute(sql_insert_query, dados)
 
 def get_id_evento(evento_nome):
@@ -127,3 +127,41 @@ def is_evento_admin(evento_id, usuario_id):
         cur.execute('SELECT id_administrador FROM evento WHERE id = ?', (evento_id,))
         resultado = cur.fetchone()
         return resultado[0] == usuario_id if resultado else False
+    
+def filtrar_eventos_proximos(session_id):
+    usuario_id = session_id
+    if not usuario_id:
+        return []  # Retorna uma lista vazia se o usuário não estiver logado
+    
+    with sqlite3.connect("database.db") as conn:
+        cur = conn.cursor()
+        cur.execute('''
+        SELECT evento.*
+        FROM evento
+        JOIN lista ON evento.id = lista.evento_id
+        WHERE lista.usuario_id = ? AND lista.status = 2
+        ORDER BY evento.data ASC
+        LIMIT 3
+        ''', (usuario_id,))
+        eventos = cur.fetchall()
+        return eventos  # Retorna lista de eventos futuros do usuário
+
+def solicitar_participacao(evento_id, usuario_id):
+    with sqlite3.connect("database.db") as conn:
+        sql_insert_query = '''
+        INSERT INTO lista (evento_id, usuario_id, status)
+        VALUES (?, ?, 1);
+        '''
+        cur = conn.cursor()
+        dados = (evento_id, usuario_id)
+        cur.execute(sql_insert_query, dados)
+
+def aceitar_solicitacao(evento_id, usuario_id):
+    with sqlite3.connect("database.db") as conn:
+        cur = conn.cursor()
+        cur.execute('UPDATE lista SET status = 2 WHERE evento_id = ? AND usuario_id = ?', (evento_id, usuario_id))
+
+def recusar_solicitacao(evento_id, usuario_id):
+    with sqlite3.connect("database.db") as conn:
+        cur = conn.cursor()
+        cur.execute('DELETE FROM lista WHERE evento_id = ? AND usuario_id = ?', (evento_id, usuario_id))
