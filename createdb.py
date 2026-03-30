@@ -13,7 +13,28 @@ CREATE TABLE IF NOT EXISTS evento (
 	hora NUMERIC NOT NULL,
 	limite INTEGER NOT NULL,
     token TEXT NOT NULL,
+    categoria INTEGER DEFAULT 1,
+    valor_total REAL,
 	FOREIGN KEY (id_administrador) REFERENCES usuario (id)
+)
+''')
+
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS itemEvento (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    evento_id INTEGER,
+    nome_item TEXT NOT NULL,
+    FOREIGN KEY (evento_id) REFERENCES evento (id)
+)
+''')
+
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS itemEscolha (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    item_id INTEGER,
+    usuario_id INTEGER NOT NULL,
+    FOREIGN KEY (item_id) REFERENCES itemEvento (id)
+    FOREIGN KEY (usuario_id) REFERENCES usuario (id)
 )
 ''')
 

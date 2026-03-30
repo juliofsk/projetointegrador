@@ -109,18 +109,62 @@ def get_criar_evento():
 
 @srv.post("/criarEvento")
 def post_evento():
-    administrador_id = fk.session["usuario_id"]
+    administrador_id = fk.session.get("usuario_id")
     if not administrador_id:
         return fk.redirect("/login")
+
     evento_nome = request.form["nome"]
     evento_local = request.form["local"]
     evento_data = request.form["data"]
     evento_horario = request.form["hora"]
     evento_limite = request.form["limite"]
+    evento_categoria = request.form["categoria"]
+
+    valor_total = request.form.get("valor_total")
+    itens = request.form.get("itens")
+
     evento_token = secrets.token_urlsafe(22)
-    print(fk.session)
-    md.config_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token)
+
+    evento_id = md.config_evento(
+        administrador_id,
+        evento_nome,
+        evento_local,
+        evento_data,
+        evento_horario,
+        evento_limite,
+        evento_token,
+        evento_categoria,
+        valor_total,
+    )
+
+    # ✔️ coletivo
+    if evento_categoria == "3" and itens:
+        lista_itens = [i.strip() for i in itens.split(",") if i.strip()]
+        md.salvar_itens(evento_id, lista_itens)
+
     return fk.redirect(f"/evento/{evento_token}")
+
+@srv.post("/editarEvento")
+def editar_evento():
+    evento_id = request.form["evento_id"]
+    evento_nome = request.form["nome"]
+    evento_local = request.form["local"]
+    evento_data = request.form["data"]
+    evento_horario = request.form["hora"]
+    evento_limite = request.form["limite"]
+    evento_categoria = request.form["categoria"]
+    valor_total = request.form.get("valor_total")
+    itens = request.form.get("itens")
+    md.editar_evento(evento_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_categoria, valor_total)
+    
+    if evento_categoria != "3":
+        md.deletar_itens_do_evento(evento_id)
+
+    if evento_categoria == "3" and itens:
+        lista_itens = [i.strip() for i in itens.split(",") if i.strip()]
+        md.atualizar_itens_evento(evento_id, lista_itens)
+    
+    return fk.redirect(f"/evento/{md.get_token_evento(evento_id)}")
 
 @srv.get("/evento/<evento_token>")
 def get_evento(evento_token):

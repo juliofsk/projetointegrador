@@ -3,44 +3,45 @@
 
 <head>
     {%include 'partials/_head.html'%}
-        <style>
-            html,
-            body {
+    <style>
+        html,
+        body {
             height: 90%;
-            }
+        }
 
-            .form-signin {
+        .form-signin {
             max-width: 330px;
             padding: 1rem;
-            }
+        }
 
-            .form-signin .form-floating:focus-within {
+        .form-signin .form-floating:focus-within {
             z-index: 2;
-            }
+        }
 
-            .form-signin input[type="email"] {
+        .form-signin input[type="email"] {
             margin-bottom: -1px;
             border-bottom-right-radius: 0;
             border-bottom-left-radius: 0;
-            }
+        }
 
-            .form-signin input[type="password"] {
+        .form-signin input[type="password"] {
             margin-bottom: 10px;
             border-top-left-radius: 0;
             border-top-right-radius: 0;
-            }
+        }
 
-            #txLink {
-                visibility: hidden;
-            }
-        </style>
+        #txLink {
+            visibility: hidden;
+        }
+    </style>
 </head>
 
 <body class="d-flex align-items-center py-4 ">
     <main class="form-signin w-100 m-auto">
-        <form action="/criarEvento" method="post"> <img class="mb-4" src="/static/img/brand-icon.png" alt="" width="70" height="70">
+        <form action="/criarEvento" method="post"> <img class="mb-4" src="/static/img/brand-icon.png" alt="" width="70"
+                height="70">
             <h1 class="h3 mb-3 fw-normal">Criar Evento</h1>
-            
+
             <div class="form-floating"> <input type="text" class="form-control" id="floatingInput"
                     placeholder="nome-evento" name="nome"> <label for="floatingInput">Nome</label> </div>
 
@@ -48,16 +49,71 @@
                     placeholder="local-evento" name="local"> <label for="floatingInput">Local</label> </div>
 
             <div class="form-floating"> <input type="date" class="form-control" id="floatingDate"
-            placeholder="data-evento" name="data"> <label for="floatingDate">Data</label> </div>
+                    placeholder="data-evento" name="data"> <label for="floatingDate">Data</label> </div>
 
             <div class="form-floating"> <input type="time" class="form-control" id="floatingInput"
-            placeholder="hora-evento" name="hora"> <label for="floatingTime">Hora</label> </div>
-            
-            <div class="form-floating"> <input type="number" class="form-control" id="floatingLimite"
-            placeholder="limite-convidados" name="limite"> <label for="floatingLimite">Limite de convidados</label> </div>
+                    placeholder="hora-evento" name="hora"> <label for="floatingTime">Hora</label> </div>
 
+            <div class="form-floating"> <input type="number" class="form-control" id="floatingLimite"
+                    placeholder="limite-convidados" name="limite"> <label for="floatingLimite">Limite de
+                    convidados</label> </div>
+
+            <div class="form-floating mt-3">
+                <select class="form-select" name="categoria" id="categoriaSelect" required>
+                    <option value="">Selecione</option>
+                    <option value="1">Normal</option>
+                    <option value="2">Racha</option>
+                    <option value="3">Coletivo</option>
+                </select>
+                <label>Categoria</label>
+            </div>
+
+            <div id="campoRacha" class="form-floating mt-3 d-none">
+                <input type="number" class="form-control" name="valor_total" placeholder="Valor total">
+                <label>Valor total (R$)</label>
+            </div>
+
+            <div id="campoColetivo" class="form-floating mt-3 d-none">
+                <textarea class="form-control" name="itens" placeholder="Itens" style="height: 100px"></textarea>
+                <label>Itens (separados por vírgula)</label>
+            </div>
             <button class="btn btn-primary w-100 py-2 mt-5" type="submit" value="criar">Criar</button>
         </form>
     </main>
 </body>
+
 </html>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const select = document.getElementById("categoriaSelect");
+    const racha = document.getElementById("campoRacha");
+    const coletivo = document.getElementById("campoColetivo");
+
+    const inputRacha = racha.querySelector("input");
+    const inputColetivo = coletivo.querySelector("textarea");
+
+    function atualizarCampos() {
+        const valor = select.value;
+
+        racha.classList.add("d-none");
+        coletivo.classList.add("d-none");
+
+        inputRacha.disabled = true;
+        inputColetivo.disabled = true;
+
+        if (valor === "2") {
+            racha.classList.remove("d-none");
+            inputRacha.disabled = false;
+        }
+
+        if (valor === "3") {
+            coletivo.classList.remove("d-none");
+            inputColetivo.disabled = false;
+        }
+    }
+
+    select.addEventListener("change", atualizarCampos);
+});
+</script>
