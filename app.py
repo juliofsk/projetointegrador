@@ -171,6 +171,9 @@ def get_evento(evento_token):
     evento_id = md.get_id_evento(evento_token)
     url = f'http://localhost:5050/evento/{evento_token}'
     print(evento_id)
+
+    itens = md.get_itens_evento(evento_id)
+
     if not evento_id:
         return "Evento não encontrado", 404
     evento = md.get_evento(evento_id)
@@ -193,14 +196,15 @@ def get_evento(evento_token):
             is_admin = False
     print(solicitacoes)
     print(usuarios)
-    return fk.render_template("events/event_detail.html", usuarios=usuarios, solicitacoes=solicitacoes, is_admin=is_admin, evento=evento, url=url)
+    return fk.render_template("events/event_detail.html", usuarios=usuarios, solicitacoes=solicitacoes, is_admin=is_admin, evento=evento, url=url, itens=itens)
 
 @srv.post("/evento/solicitar")
 def solicitar_participacao():
     evento_id = request.form.get("evento_id")
     usuario_id = fk.session["usuario_id"]
     if evento_id and usuario_id:
-        md.solicitar_participacao(evento_id, usuario_id)
+        if md.get_status(evento_id, usuario_id) == 0:
+            md.solicitar_participacao(evento_id, usuario_id)
     return fk.redirect(fk.request.referrer or "/")
 
 @srv.post("/lista/aceitar")

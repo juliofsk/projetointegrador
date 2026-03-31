@@ -170,7 +170,25 @@ def is_evento_admin(evento_id, usuario_id):
         cur.execute('SELECT id_administrador FROM evento WHERE id = ?', (evento_id,))
         resultado = cur.fetchone()
         return resultado[0] == usuario_id if resultado else False
-    
+
+def get_itens_evento(evento_id):
+    with sqlite3.connect("database.db") as conn:
+        cur = conn.cursor()
+        cur.execute('SELECT nome_item FROM itemEvento WHERE evento_id = ?', (evento_id))
+        itens = cur.fetchall
+        return itens
+
+def get_status(evento_id, usuario_id):
+    with sqlite3.connect("database.db") as conn:
+        cur = conn.cursor()
+        cur.execute('''
+        SELECT status
+        FROM lista
+        WHERE usuario_id = ? AND evento_id = ?
+        ''', (usuario_id ,evento_id))
+        status = cur.fetchone()
+        return status
+
 def filtrar_eventos_proximos(session_id):
     usuario_id = session_id
     if not usuario_id:

@@ -233,9 +233,9 @@
                                 <div class="form-floating">
                                     <select class="form-select" name="categoria" id="categoriaSelect" required>
                                         <option value="">Selecione</option>
-                                        <option value="1" {{ 'selected' if evento[7]==1 else '' }}>Normal</option>
-                                        <option value="2" {{ 'selected' if evento[7]==2 else '' }}>Racha</option>
-                                        <option value="3" {{ 'selected' if evento[7]==3 else '' }}>Coletivo</option>
+                                        <option value="1" {{ 'selected' if evento[8]==1 else '' }}>Normal</option>
+                                        <option value="2" {{ 'selected' if evento[8]==2 else '' }}>Racha</option>
+                                        <option value="3" {{ 'selected' if evento[8]==3 else '' }}>Coletivo</option>
                                     </select>
                                     <label>Categoria</label>
                                 </div>
@@ -244,7 +244,7 @@
                             <div id="campoRacha" class="col-12 d-none">
                                 <div class="form-floating">
                                     <input type="number" class="form-control" name="valor_total"
-                                        placeholder="Valor total">
+                                        placeholder="Valor total" value="{{evento[9]}}">
                                     <label>Valor total (R$)</label>
                                 </div>
                             </div>
@@ -252,7 +252,7 @@
                             <div id="campoColetivo" class="col-12 d-none">
                                 <div class="form-floating">
                                     <textarea class="form-control" name="itens" placeholder="Itens"
-                                        style="height: 100px"></textarea>
+                                        style="height: 100px">{{itens}}</textarea>
                                     <label>Itens (separados por vírgula)</label>
                                 </div>
                             </div>
