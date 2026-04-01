@@ -125,7 +125,7 @@ def post_evento():
 
     evento_token = secrets.token_urlsafe(22)
 
-    evento_id = md.config_evento(
+    md.config_evento(
         administrador_id,
         evento_nome,
         evento_local,
@@ -136,6 +136,8 @@ def post_evento():
         evento_categoria,
         valor_total,
     )
+
+    evento_id = md.get_id_evento(evento_token)
 
     # ✔️ coletivo
     if evento_categoria == "3" and itens:
@@ -172,7 +174,22 @@ def get_evento(evento_token):
     url = f'http://localhost:5050/evento/{evento_token}'
     print(evento_id)
 
-    itens = md.get_itens_evento(evento_id)
+    evento_categoria = md.get_categoria(evento_id)
+
+    num_participantes = md.get_num_participantes(evento_id)
+
+    itens_texto = ""
+
+    if evento_categoria == 3:
+        itens = md.get_itens_evento(evento_id)
+        itens_texto = ", ".join(itens)
+        itens_escolhidos = md.get_itens_escolhidos(evento_id)
+        itens_disponiveis = [i for i in itens if i not in itens_escolhidos]
+        usuario_item = md.get_item_usuario(usuario_id, evento_id)
+
+    if evento_categoria == 2:
+        valor_total = md.get_valor_total(evento_id)
+        valor_por_pessoa = round(valor_total / max(num_participantes, 1), 2)
 
     if not evento_id:
         return "Evento não encontrado", 404
@@ -196,7 +213,7 @@ def get_evento(evento_token):
             is_admin = False
     print(solicitacoes)
     print(usuarios)
-    return fk.render_template("events/event_detail.html", usuarios=usuarios, solicitacoes=solicitacoes, is_admin=is_admin, evento=evento, url=url, itens=itens)
+    return fk.render_template("events/event_detail.html", usuarios=usuarios, solicitacoes=solicitacoes, is_admin=is_admin, evento=evento, url=url, itens_disponiveis=itens_disponiveis, usuario_item=usuario_item, itens_escolhidos=itens_escolhidos, itens=itens_texto, valor_por_pessoa=valor_por_pessoa, valor_total=valor_total, num_participantes=num_participantes)
 
 @srv.post("/evento/solicitar")
 def solicitar_participacao():

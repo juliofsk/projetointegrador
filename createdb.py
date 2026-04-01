@@ -23,17 +23,9 @@ cursor.execute('''
 CREATE TABLE IF NOT EXISTS itemEvento (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     evento_id INTEGER,
+    usuario_id INTEGER,
     nome_item TEXT NOT NULL,
-    FOREIGN KEY (evento_id) REFERENCES evento (id)
-)
-''')
-
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS itemEscolha (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    item_id INTEGER,
-    usuario_id INTEGER NOT NULL,
-    FOREIGN KEY (item_id) REFERENCES itemEvento (id)
+    FOREIGN KEY (evento_id) REFERENCES evento (id),
     FOREIGN KEY (usuario_id) REFERENCES usuario (id)
 )
 ''')

@@ -174,9 +174,56 @@ def is_evento_admin(evento_id, usuario_id):
 def get_itens_evento(evento_id):
     with sqlite3.connect("database.db") as conn:
         cur = conn.cursor()
-        cur.execute('SELECT nome_item FROM itemEvento WHERE evento_id = ?', (evento_id))
-        itens = cur.fetchall
+        cur.execute('SELECT nome_item FROM itemEvento WHERE evento_id = ?', (evento_id,))
+        itens = [item[0] for item in cur.fetchall()]
         return itens
+
+def get_itens_escolhidos(evento_id):
+    with sqlite3.connect("database.db") as conn:
+        cur = conn.cursor()
+        cur.execute('''
+        SELECT nome_item
+        FROM itemEvento
+        WHERE evento_id = ? AND usuario_id IN (
+            SELECT usuario_id
+            FROM lista
+            WHERE evento_id = ? AND status = 2
+        )
+        ''', (evento_id, evento_id))
+        itens_escolhidos = [item[0] for item in cur.fetchall()]
+        return itens_escolhidos
+
+def get_item_usuario(evento_id, usuario_id):
+    with sqlite3.connect("database.db") as conn:
+        cur = conn.cursor()
+        cur.execute('''
+        SELECT nome_item
+        FROM itemEvento
+        WHERE evento_id = ? AND usuario_id = ?
+        ''', (evento_id, usuario_id))
+        resultado = cur.fetchone()
+        return resultado[0] if resultado else None
+
+def get_valor_total(evento_id):
+    with sqlite3.connect("database.db") as conn:
+        cur = conn.cursor()
+        cur.execute('SELECT valor_total FROM evento WHERE id = ?', (evento_id,))
+        resultado = cur.fetchone()
+        return resultado[0] if resultado else None
+    
+def get_num_participantes(evento_id):
+    with sqlite3.connect("database.db") as conn:
+        cur = conn.cursor()
+        cur.execute('SELECT COUNT(*) FROM lista WHERE evento_id = ? AND status = 2', (evento_id,))
+        resultado = cur.fetchone()
+        return resultado[0] if resultado else 0
+
+def get_categoria(evento_id):
+    with sqlite3.connect("database.db") as conn:
+        cur = conn.cursor()
+        cur.execute('SELECT categoria FROM evento WHERE id = ?', (evento_id,))
+        resultado = cur.fetchone()
+        return resultado[0] if resultado else None
 
 def get_status(evento_id, usuario_id):
     with sqlite3.connect("database.db") as conn:

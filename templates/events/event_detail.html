@@ -139,6 +139,59 @@
         </form>
     </div>
 
+    {% if evento[8] == 3 and usuario_no_evento and not usuario_item %}
+
+    <div class="container mt-4">
+
+        <h5>Escolha o item que você vai levar</h5>
+
+        <form action="/evento/escolher_item" method="POST">
+
+            <input type="hidden" name="evento_id" value="{{evento[0]}}">
+
+            <select name="item" class="form-control">
+
+                {% for item in itens_disponiveis %}
+                <option value="{{item}}">{{item}}</option>
+                {% endfor %}
+
+            </select>
+
+            <button class="btn btn-evento mt-2">Confirmar</button>
+
+        </form>
+
+    </div>
+
+    {% endif %}
+
+    <div class="container mb-4">
+        <div class="row text-center">
+
+            <div class="col">
+                <h5>👥</h5>
+                <div>{{ num_participantes }}</div>
+                <small>Participantes</small>
+            </div>
+
+            {% if evento[8] == 2 %}
+            <div class="col">
+                <h5>💰</h5>
+                <div>R$ {{ valor_total }}</div>
+                <small>Total</small>
+            </div>
+
+            <div class="col">
+                <h5>💳</h5>
+                <div>R$ {{ valor_por_pessoa }}</div>
+                <small>Por pessoa</small>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+
     <div class="container">
 
 
@@ -167,6 +220,11 @@
                     {{ usuario[1] }}
                 </div>
                 <div class="col d-flex justify-content-end">
+                    {% if evento[8] == 3 %}
+                    <div>
+                        <label>{{item}}</label>
+                    </div>
+                    {% endif %}
                     <div>
                         <input type="checkbox">
                     </div>
@@ -186,90 +244,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                 </div>
 
-                <div class="modal-body">
-                    <form action="/editarEvento" method="post">
-
-                        <input type="hidden" name="evento_id" value="{{evento[0]}}">
-
-                        <div class="row g-3">
-
-                            <div class="col-12">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" name="nome" value="{{evento[2]}}" required>
-                                    <label>Nome</label>
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" name="local" value="{{evento[3]}}" required>
-                                    <label>Local</label>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-floating">
-                                    <input type="date" class="form-control" name="data" value="{{evento[4]}}" required>
-                                    <label>Data</label>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-floating">
-                                    <input type="time" class="form-control" name="hora" value="{{evento[5]}}" required>
-                                    <label>Hora</label>
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="form-floating">
-                                    <input type="number" class="form-control" name="limite" value="{{evento[6]}}"
-                                        required>
-                                    <label>Limite de convidados</label>
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="form-floating">
-                                    <select class="form-select" name="categoria" id="categoriaSelect" required>
-                                        <option value="">Selecione</option>
-                                        <option value="1" {{ 'selected' if evento[8]==1 else '' }}>Normal</option>
-                                        <option value="2" {{ 'selected' if evento[8]==2 else '' }}>Racha</option>
-                                        <option value="3" {{ 'selected' if evento[8]==3 else '' }}>Coletivo</option>
-                                    </select>
-                                    <label>Categoria</label>
-                                </div>
-                            </div>
-
-                            <div id="campoRacha" class="col-12 d-none">
-                                <div class="form-floating">
-                                    <input type="number" class="form-control" name="valor_total"
-                                        placeholder="Valor total" value="{{evento[9]}}">
-                                    <label>Valor total (R$)</label>
-                                </div>
-                            </div>
-
-                            <div id="campoColetivo" class="col-12 d-none">
-                                <div class="form-floating">
-                                    <textarea class="form-control" name="itens" placeholder="Itens"
-                                        style="height: 100px">{{itens}}</textarea>
-                                    <label>Itens (separados por vírgula)</label>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="d-flex justify-content-end gap-2 mt-4">
-                            <button type="button" class="btn btn-secundario-dark" data-bs-dismiss="modal">
-                                Cancelar
-                            </button>
-                            <button class="btn btn-evento" type="submit">
-                                Salvar evento
-                            </button>
-                        </div>
-
-                    </form>
-                </div>
+                {% include 'events/edit_event.html' %}
 
             </div>
         </div>
@@ -282,37 +257,37 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
 
-    const select = document.getElementById("categoriaSelect");
-    const racha = document.getElementById("campoRacha");
-    const coletivo = document.getElementById("campoColetivo");
+        const select = document.getElementById("categoriaSelect");
+        const racha = document.getElementById("campoRacha");
+        const coletivo = document.getElementById("campoColetivo");
 
-    const inputRacha = racha.querySelector("input");
-    const inputColetivo = coletivo.querySelector("textarea");
+        const inputRacha = racha.querySelector("input");
+        const inputColetivo = coletivo.querySelector("textarea");
 
-    function atualizarCampos() {
-        const valor = select.value;
+        function atualizarCampos() {
+            const valor = select.value;
 
-        // esconde e desativa tudo
-        racha.classList.add("d-none");
-        coletivo.classList.add("d-none");
+            // esconde e desativa tudo
+            racha.classList.add("d-none");
+            coletivo.classList.add("d-none");
 
-        inputRacha.disabled = true;
-        inputColetivo.disabled = true;
+            inputRacha.disabled = true;
+            inputColetivo.disabled = true;
 
-        if (valor === "2") {
-            racha.classList.remove("d-none");
-            inputRacha.disabled = false;
+            if (valor === "2") {
+                racha.classList.remove("d-none");
+                inputRacha.disabled = false;
+            }
+
+            if (valor === "3") {
+                coletivo.classList.remove("d-none");
+                inputColetivo.disabled = false;
+            }
         }
 
-        if (valor === "3") {
-            coletivo.classList.remove("d-none");
-            inputColetivo.disabled = false;
-        }
-    }
-
-    select.addEventListener("change", atualizarCampos);
-    atualizarCampos();
-});
+        select.addEventListener("change", atualizarCampos);
+        atualizarCampos();
+    });
 </script>
