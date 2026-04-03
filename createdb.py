@@ -14,19 +14,7 @@ CREATE TABLE IF NOT EXISTS evento (
 	limite INTEGER NOT NULL,
     token TEXT NOT NULL,
     categoria INTEGER DEFAULT 1,
-    valor_total REAL,
 	FOREIGN KEY (id_administrador) REFERENCES usuario (id)
-)
-''')
-
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS itemEvento (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    evento_id INTEGER,
-    usuario_id INTEGER,
-    nome_item TEXT NOT NULL,
-    FOREIGN KEY (evento_id) REFERENCES evento (id),
-    FOREIGN KEY (usuario_id) REFERENCES usuario (id)
 )
 ''')
 
@@ -43,7 +31,6 @@ CREATE TABLE IF NOT EXISTS usuario (
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS lista (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-	comprovante TEXT,
 	status INTEGER,
     usuario_id INTEGER,
     evento_id INTEGER,

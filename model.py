@@ -41,54 +41,29 @@ def editar_perfil(usuario_id, usuario_nome, usuario_email, usuario_foto):
 
 
 #FUNÇÕES EVENTO
-def config_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token, evento_categoria, valor_total):
-    criar_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token, evento_categoria, valor_total)
+def config_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token):
+    criar_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token)
     entralista(get_id_evento(evento_token), administrador_id)
 
-def criar_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token, evento_categoria, valor_total):
+def criar_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token):
     with sqlite3.connect("database.db") as conn:
         sql_insert_query = '''
-        INSERT INTO evento (id_administrador, nome, local, data, hora, limite, token, categoria, valor_total)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+        INSERT INTO evento (id_administrador, nome, local, data, hora, limite, token)
+        VALUES (?, ?, ?, ?, ?, ?, ?);
         '''
-        dados = (administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token, evento_categoria, valor_total)
+        dados = (administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token)
         conn.execute(sql_insert_query, dados)
 
-def editar_evento(evento_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_categoria, valor_total):
+def editar_evento(evento_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite):
     with sqlite3.connect("database.db") as conn:
         sql_update_query = '''
         UPDATE evento
-        SET nome = ?, local = ?, data = ?, hora = ?, limite = ?, categoria = ?, valor_total = ?
+        SET nome = ?, local = ?, data = ?, hora = ?, limite = ?
         WHERE id = ?;
         '''
-        dados = (evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_categoria, valor_total, evento_id)
+        dados = (evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_id)
         cur = conn.cursor()
         cur.execute(sql_update_query, dados)
-
-def salvar_itens(evento_id, lista_itens):
-    with sqlite3.connect("database.db") as conn:
-        cursor = conn.cursor()
-        for item in lista_itens:
-            cursor.execute("""
-                INSERT INTO itemEvento (evento_id, nome_item)
-                VALUES (?, ?)
-            """, (evento_id, item))
-
-    conn.commit()
-
-def atualizar_itens_evento(evento_id, lista_itens):
-    with sqlite3.connect("database.db") as conn:
-        cur = conn.cursor()
-        # Deleta os itens atuais do evento
-        deletar_itens_do_evento(evento_id)
-        # Insere os novos itens
-        for item in lista_itens:
-            cur.execute('INSERT INTO itemEvento (evento_id, nome_item) VALUES (?, ?)', (evento_id, item))
-
-def deletar_itens_do_evento(evento_id):
-    with sqlite3.connect("database.db") as conn:
-        cur = conn.cursor()
-        cur.execute('DELETE FROM itemEvento WHERE evento_id = ?', (evento_id,))
 
 def insert_lista(evento_id, usuario_id):
     with sqlite3.connect("database.db") as conn:
@@ -170,46 +145,6 @@ def is_evento_admin(evento_id, usuario_id):
         cur.execute('SELECT id_administrador FROM evento WHERE id = ?', (evento_id,))
         resultado = cur.fetchone()
         return resultado[0] == usuario_id if resultado else False
-
-def get_itens_evento(evento_id):
-    with sqlite3.connect("database.db") as conn:
-        cur = conn.cursor()
-        cur.execute('SELECT nome_item FROM itemEvento WHERE evento_id = ?', (evento_id,))
-        itens = [item[0] for item in cur.fetchall()]
-        return itens
-
-def get_itens_escolhidos(evento_id):
-    with sqlite3.connect("database.db") as conn:
-        cur = conn.cursor()
-        cur.execute('''
-        SELECT nome_item
-        FROM itemEvento
-        WHERE evento_id = ? AND usuario_id IN (
-            SELECT usuario_id
-            FROM lista
-            WHERE evento_id = ? AND status = 2
-        )
-        ''', (evento_id, evento_id))
-        itens_escolhidos = [item[0] for item in cur.fetchall()]
-        return itens_escolhidos
-
-def get_item_usuario(evento_id, usuario_id):
-    with sqlite3.connect("database.db") as conn:
-        cur = conn.cursor()
-        cur.execute('''
-        SELECT nome_item
-        FROM itemEvento
-        WHERE evento_id = ? AND usuario_id = ?
-        ''', (evento_id, usuario_id))
-        resultado = cur.fetchone()
-        return resultado[0] if resultado else None
-
-def get_valor_total(evento_id):
-    with sqlite3.connect("database.db") as conn:
-        cur = conn.cursor()
-        cur.execute('SELECT valor_total FROM evento WHERE id = ?', (evento_id,))
-        resultado = cur.fetchone()
-        return resultado[0] if resultado else None
     
 def get_num_participantes(evento_id):
     with sqlite3.connect("database.db") as conn:
@@ -217,13 +152,6 @@ def get_num_participantes(evento_id):
         cur.execute('SELECT COUNT(*) FROM lista WHERE evento_id = ? AND status = 2', (evento_id,))
         resultado = cur.fetchone()
         return resultado[0] if resultado else 0
-
-def get_categoria(evento_id):
-    with sqlite3.connect("database.db") as conn:
-        cur = conn.cursor()
-        cur.execute('SELECT categoria FROM evento WHERE id = ?', (evento_id,))
-        resultado = cur.fetchone()
-        return resultado[0] if resultado else None
 
 def get_status(evento_id, usuario_id):
     with sqlite3.connect("database.db") as conn:

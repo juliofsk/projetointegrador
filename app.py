@@ -118,10 +118,6 @@ def post_evento():
     evento_data = request.form["data"]
     evento_horario = request.form["hora"]
     evento_limite = request.form["limite"]
-    evento_categoria = request.form["categoria"]
-
-    valor_total = request.form.get("valor_total")
-    itens = request.form.get("itens")
 
     evento_token = secrets.token_urlsafe(22)
 
@@ -133,16 +129,10 @@ def post_evento():
         evento_horario,
         evento_limite,
         evento_token,
-        evento_categoria,
-        valor_total,
     )
 
     evento_id = md.get_id_evento(evento_token)
 
-    # ✔️ coletivo
-    if evento_categoria == "3" and itens:
-        lista_itens = [i.strip() for i in itens.split(",") if i.strip()]
-        md.salvar_itens(evento_id, lista_itens)
 
     return fk.redirect(f"/evento/{evento_token}")
 
@@ -154,17 +144,7 @@ def editar_evento():
     evento_data = request.form["data"]
     evento_horario = request.form["hora"]
     evento_limite = request.form["limite"]
-    evento_categoria = request.form["categoria"]
-    valor_total = request.form.get("valor_total")
-    itens = request.form.get("itens")
-    md.editar_evento(evento_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_categoria, valor_total)
-    
-    if evento_categoria != "3":
-        md.deletar_itens_do_evento(evento_id)
-
-    if evento_categoria == "3" and itens:
-        lista_itens = [i.strip() for i in itens.split(",") if i.strip()]
-        md.atualizar_itens_evento(evento_id, lista_itens)
+    md.editar_evento(evento_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite)
     
     return fk.redirect(f"/evento/{md.get_token_evento(evento_id)}")
 
@@ -174,28 +154,14 @@ def get_evento(evento_token):
     url = f'http://localhost:5050/evento/{evento_token}'
     print(evento_id)
 
-    evento_categoria = md.get_categoria(evento_id)
-
     num_participantes = md.get_num_participantes(evento_id)
-
-    itens_texto = ""
-
-    if evento_categoria == 3:
-        itens = md.get_itens_evento(evento_id)
-        itens_texto = ", ".join(itens)
-        itens_escolhidos = md.get_itens_escolhidos(evento_id)
-        itens_disponiveis = [i for i in itens if i not in itens_escolhidos]
-        usuario_item = md.get_item_usuario(usuario_id, evento_id)
-
-    if evento_categoria == 2:
-        valor_total = md.get_valor_total(evento_id)
-        valor_por_pessoa = round(valor_total / max(num_participantes, 1), 2)
 
     if not evento_id:
         return "Evento não encontrado", 404
     evento = md.get_evento(evento_id)
     if not evento:
         return "Evento não encontrado", 404
+    
     usuarios = md.usuarios_lista(evento_id)
     solicitacoes = []
     # se a função existir, carrega solicitacoes (status=1)
@@ -212,15 +178,23 @@ def get_evento(evento_token):
         except AttributeError:
             is_admin = False
     print(solicitacoes)
-    print(usuarios)
-    return fk.render_template("events/event_detail.html", usuarios=usuarios, solicitacoes=solicitacoes, is_admin=is_admin, evento=evento, url=url, itens_disponiveis=itens_disponiveis, usuario_item=usuario_item, itens_escolhidos=itens_escolhidos, itens=itens_texto, valor_por_pessoa=valor_por_pessoa, valor_total=valor_total, num_participantes=num_participantes)
+    return fk.render_template("events/event_detail.html", usuarios=usuarios, solicitacoes=solicitacoes, is_admin=is_admin, evento=evento, url=url, num_participantes=num_participantes)
+
+@srv.post("/evento/escolher_item")
+def escolher_item():
+    evento_id = request.form.get("evento_id")
+    usuario_id = fk.session["usuario_id"]
+    item_nome = request.form.get("item_nome")
+    if evento_id and usuario_id and item_nome:
+        md.escolher_item(evento_id, usuario_id, item_nome)
+    return fk.redirect(fk.request.referrer or "/")
 
 @srv.post("/evento/solicitar")
 def solicitar_participacao():
     evento_id = request.form.get("evento_id")
     usuario_id = fk.session["usuario_id"]
     if evento_id and usuario_id:
-        if md.get_status(evento_id, usuario_id) == 0:
+        if md.get_status(evento_id, usuario_id) != 2:
             md.solicitar_participacao(evento_id, usuario_id)
     return fk.redirect(fk.request.referrer or "/")
 

@@ -1,0 +1,90 @@
+# Sistema de Organização de Eventos
+
+Este projeto consiste em um sistema web para organização de eventos entre amigos ou comunidades. 
+A plataforma permite criar eventos e convidar participantes.
+
+## Funcionalidades
+
+- Criação de eventos
+- Sistema de convite por link
+- Solicitação de entrada em eventos
+- Gerenciamento de participantes pelo administrador
+
+## Tecnologias Utilizadas
+
+- Python
+- Flask
+- SQLite
+- HTML
+- CSS
+- JavaScript
+
+## Estrutura do Projeto
+
+project/
+│
+├── __pycache__/            # Cache do Python
+├── .venv/                  # Ambiente virtual Python
+├── node_modules/           # Dependências do Node (se usado)
+│
+├── static/                 # Arquivos estáticos
+│   ├── img/                # Imagens do sistema
+│   ├── uploads/            # Uploads dos usuários
+│   ├── style.css           # Estilo principal
+│   └── style.css.map
+│
+├── templates/              # Templates HTML (Jinja)
+│   │
+│   ├── auth/               # Autenticação
+│   │   ├── login.html
+│   │   └── register.html
+│   │
+│   ├── components/         # Componentes reutilizáveis
+│   │   └── _event_card.html
+│   │
+│   ├── events/             # Páginas relacionadas a eventos
+│   │   ├── create_event.html
+│   │   ├── edit_event.html
+│   │   ├── event_detail.html
+│   │   ├── events_list.html
+│   │   └── events_requests.html
+│   │
+│   ├── partials/           # Partes reutilizáveis da interface
+│   │   ├── _footer.html
+│   │   ├── _head.html
+│   │   └── _header.html
+│   │
+│   ├── user/               # Área do usuário
+│   │   ├── edit_profile.html
+│   │   └── profile.html
+│   │
+│   └── home.html           # Página inicial
+│
+├── app.py                  # Arquivo principal da aplicação Flask
+├── createdb.py             # Script para criação do banco de dados
+├── model.py                # Modelos e manipulação do banco
+├── database.db             # Banco de dados SQLite
+│
+├── package.json            # Configuração de dependências JS
+├── package-lock.json
+│
+├── anotações               # Arquivo de notas do projeto
+└── README.md               # Documentação do projeto
+
+## Como Executar
+
+1. Clone o repositório
+
+git clone https://github.com/juliofsk/projetointegrador
+
+2. Instale as dependências
+
+pip install flask
+
+3. Execute o projeto
+
+python app.py
+
+4. Acesse no navegador
+
+http://localhost:5000

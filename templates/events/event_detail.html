@@ -139,68 +139,11 @@
         </form>
     </div>
 
-    {% if evento[8] == 3 and usuario_no_evento and not usuario_item %}
-
-    <div class="container mt-4">
-
-        <h5>Escolha o item que você vai levar</h5>
-
-        <form action="/evento/escolher_item" method="POST">
-
-            <input type="hidden" name="evento_id" value="{{evento[0]}}">
-
-            <select name="item" class="form-control">
-
-                {% for item in itens_disponiveis %}
-                <option value="{{item}}">{{item}}</option>
-                {% endfor %}
-
-            </select>
-
-            <button class="btn btn-evento mt-2">Confirmar</button>
-
-        </form>
-
-    </div>
-
-    {% endif %}
-
-    <div class="container mb-4">
-        <div class="row text-center">
-
-            <div class="col">
-                <h5>👥</h5>
-                <div>{{ num_participantes }}</div>
-                <small>Participantes</small>
-            </div>
-
-            {% if evento[8] == 2 %}
-            <div class="col">
-                <h5>💰</h5>
-                <div>R$ {{ valor_total }}</div>
-                <small>Total</small>
-            </div>
-
-            <div class="col">
-                <h5>💳</h5>
-                <div>R$ {{ valor_por_pessoa }}</div>
-                <small>Por pessoa</small>
-            </div>
-            {% endif %}
-
-        </div>
-    </div>
-
-
     <div class="container">
-
-
         <div>
             <h3>Solicitações</h3>
         </div>
-
         {% include 'events/events_requests.html' %}
-
     </div>
 
     {%endif%}
@@ -220,11 +163,6 @@
                     {{ usuario[1] }}
                 </div>
                 <div class="col d-flex justify-content-end">
-                    {% if evento[8] == 3 %}
-                    <div>
-                        <label>{{item}}</label>
-                    </div>
-                    {% endif %}
                     <div>
                         <input type="checkbox">
                     </div>
@@ -255,39 +193,3 @@
 </html>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-
-        const select = document.getElementById("categoriaSelect");
-        const racha = document.getElementById("campoRacha");
-        const coletivo = document.getElementById("campoColetivo");
-
-        const inputRacha = racha.querySelector("input");
-        const inputColetivo = coletivo.querySelector("textarea");
-
-        function atualizarCampos() {
-            const valor = select.value;
-
-            // esconde e desativa tudo
-            racha.classList.add("d-none");
-            coletivo.classList.add("d-none");
-
-            inputRacha.disabled = true;
-            inputColetivo.disabled = true;
-
-            if (valor === "2") {
-                racha.classList.remove("d-none");
-                inputRacha.disabled = false;
-            }
-
-            if (valor === "3") {
-                coletivo.classList.remove("d-none");
-                inputColetivo.disabled = false;
-            }
-        }
-
-        select.addEventListener("change", atualizarCampos);
-        atualizarCampos();
-    });
-</script>

@@ -43,77 +43,72 @@
             <h1 class="h3 mb-3 fw-normal">Criar Evento</h1>
 
             <div class="form-floating"> <input type="text" class="form-control" id="floatingInput"
-                    placeholder="nome-evento" name="nome"> <label for="floatingInput">Nome</label> </div>
+                    placeholder="nome-evento" name="nome" maxlength="20"> <label for="floatingName">Nome</label> </div>
 
             <div class="form-floating"> <input type="text" class="form-control" id="floatingInput"
-                    placeholder="local-evento" name="local"> <label for="floatingInput">Local</label> </div>
+                    placeholder="local-evento" name="local" maxlength="20" required> <label for="floatingPlace">Local</label> </div>
 
             <div class="form-floating"> <input type="date" class="form-control" id="floatingDate"
-                    placeholder="data-evento" name="data"> <label for="floatingDate">Data</label> </div>
+                    placeholder="data-evento" name="data" required> <label for="floatingDate">Data</label> </div>
 
             <div class="form-floating"> <input type="time" class="form-control" id="floatingInput"
-                    placeholder="hora-evento" name="hora"> <label for="floatingTime">Hora</label> </div>
+                    placeholder="hora-evento" name="hora" required> <label for="floatingTime">Hora</label> </div>
 
             <div class="form-floating"> <input type="number" class="form-control" id="floatingLimite"
-                    placeholder="limite-convidados" name="limite"> <label for="floatingLimite">Limite de
+                    placeholder="limite-convidados" name="limite" min="1" max="1000"> <label for="floatingLimite">Limite de
                     convidados</label> </div>
-
-            <div class="form-floating mt-3">
-                <select class="form-select" name="categoria" id="categoriaSelect" required>
-                    <option value="">Selecione</option>
-                    <option value="1">Normal</option>
-                    <option value="2">Racha</option>
-                    <option value="3">Coletivo</option>
-                </select>
-                <label>Categoria</label>
-            </div>
-
-            <div id="campoRacha" class="form-floating mt-3 d-none">
-                <input type="number" class="form-control" name="valor_total" placeholder="Valor total">
-                <label>Valor total (R$)</label>
-            </div>
-
-            <div id="campoColetivo" class="form-floating mt-3 d-none">
-                <textarea class="form-control" name="itens" placeholder="Itens" style="height: 100px"></textarea>
-                <label>Itens (separados por vírgula)</label>
-            </div>
             <button class="btn btn-primary w-100 py-2 mt-5" type="submit" value="criar">Criar</button>
         </form>
     </main>
 </body>
 
 </html>
-
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    const select = document.getElementById("categoriaSelect");
-    const racha = document.getElementById("campoRacha");
-    const coletivo = document.getElementById("campoColetivo");
-
-    const inputRacha = racha.querySelector("input");
-    const inputColetivo = coletivo.querySelector("textarea");
-
-    function atualizarCampos() {
-        const valor = select.value;
-
-        racha.classList.add("d-none");
-        coletivo.classList.add("d-none");
-
-        inputRacha.disabled = true;
-        inputColetivo.disabled = true;
-
-        if (valor === "2") {
-            racha.classList.remove("d-none");
-            inputRacha.disabled = false;
+    document.querySelector("form").addEventListener("submit", function(e) {
+    
+        const nome = document.querySelector('input[name="nome"]').value.trim();
+        const local = document.querySelector('input[name="local"]').value.trim();
+        const data = document.querySelector('input[name="data"]').value;
+        const hora = document.querySelector('input[name="hora"]').value;
+        const limite = parseInt(document.querySelector('input[name="limite"]').value);
+    
+        // nome
+        if (nome.length === 0 || nome.length > 20) {
+            alert("O nome do evento deve ter entre 1 e 10 caracteres.");
+            e.preventDefault();
+            return;
         }
-
-        if (valor === "3") {
-            coletivo.classList.remove("d-none");
-            inputColetivo.disabled = false;
+    
+        // local
+        if (local.length === 0) {
+            alert("Informe o local do evento.");
+            e.preventDefault();
+            return;
         }
-    }
-
-    select.addEventListener("change", atualizarCampos);
-});
-</script>
+    
+        // data e hora obrigatórias
+        if (!data || !hora) {
+            alert("Informe a data e hora do evento.");
+            e.preventDefault();
+            return;
+        }
+    
+        // juntar data e hora
+        const dataHoraEvento = new Date(data + "T" + hora);
+        const agora = new Date();
+    
+        if (dataHoraEvento <= agora) {
+            alert("O evento não pode ser criado em um horário passado.");
+            e.preventDefault();
+            return;
+        }
+    
+        // limite convidados
+        if (isNaN(limite) || limite < 1 || limite > 1000) {
+            alert("O limite de convidados deve estar entre 1 e 1000.");
+            e.preventDefault();
+            return;
+        }
+    
+    });
+    </script>
