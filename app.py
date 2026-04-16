@@ -4,6 +4,7 @@ from secrets import token_hex
 import model as md
 from urllib.parse import quote, unquote
 import secrets
+import service
 
 srv = fk.Flask(__name__)
 srv.secret_key = token_hex()
@@ -51,7 +52,7 @@ def register_post():
     usuario_email = request.form.get("email")
     usuario_senha = request.form.get("senha")
 
-    md.criar_usuario(usuario_nome, usuario_email, usuario_senha)
+    service.cadastrar_usuario(usuario_nome, usuario_email, usuario_senha)
 
     return fk.render_template("auth/login.html")
 
@@ -121,18 +122,9 @@ def post_evento():
 
     evento_token = secrets.token_urlsafe(22)
 
-    md.config_evento(
-        administrador_id,
-        evento_nome,
-        evento_local,
-        evento_data,
-        evento_horario,
-        evento_limite,
-        evento_token,
-    )
+    service.criar_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token)
 
     evento_id = md.get_id_evento(evento_token)
-
 
     return fk.redirect(f"/evento/{evento_token}")
 
