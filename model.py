@@ -164,6 +164,32 @@ def get_status(evento_id, usuario_id):
         status = cur.fetchone()
         return status
 
+def filtrar_proximos_eventos(id_usuario, data):
+    with sqlite3.connect("database.db") as conn:
+        cur = conn.cursor()
+        cur.execute('''
+        SELECT evento.*
+        FROM evento
+        JOIN lista ON evento.id = lista.evento_id
+        WHERE lista.usuario_id = ? AND lista.status = 2 AND evento.data >= ?
+        ORDER BY evento.data ASC
+        ''', (id_usuario, data))
+        proximos = cur.fetchall()
+        return proximos
+    
+def filtrar_anteriores_eventos(id_usuario, data):
+    with sqlite3.connect("database.db") as conn:
+        cur = conn.cursor()
+        cur.execute('''
+        SELECT evento.*
+        FROM evento
+        JOIN lista ON evento.id = lista.evento_id
+        WHERE lista.usuario_id = ? AND lista.status = 2 AND evento.data < ?
+        ORDER BY evento.data DESC
+        ''', (id_usuario, data))
+        anteriores = cur.fetchall()
+        return anteriores
+    
 def filtrar_eventos_proximos(session_id):
     usuario_id = session_id
     if not usuario_id:

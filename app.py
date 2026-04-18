@@ -1,10 +1,11 @@
 import flask as fk
-from flask import Flask, request, render_template, app
-from secrets import token_hex
 import model as md
-from urllib.parse import quote, unquote
 import secrets
 import service
+from datetime import date
+from secrets import token_hex
+from urllib.parse import quote, unquote
+from flask import Flask, request, render_template, app
 
 srv = fk.Flask(__name__)
 srv.secret_key = token_hex()
@@ -54,7 +55,7 @@ def register_post():
 
     service.cadastrar_usuario(usuario_nome, usuario_email, usuario_senha)
 
-    return fk.render_template("auth/login.html")
+    return fk.redirect("auth/login.html")
 
 @srv.get("/logout")
 def get_logout():
@@ -128,6 +129,20 @@ def post_evento():
 
     return fk.redirect(f"/evento/{evento_token}")
 
+@srv.get("/listarEventos")
+def listar_eventos():
+    proximos_eventos = []
+    anteriores_eventos = []
+    data = date.today().isoformat()
+    try:
+        id_usuario = fk.session["usuario_id"]
+        proximos_eventos = md.filtrar_proximos_eventos(id_usuario, data)
+        anteriores_eventos = md.filtrar_anteriores_eventos(id_usuario, data)    
+    except KeyError:
+        pass
+
+    return fk.render_template("events/all_events.html", proximos_eventos=proximos_eventos, anteriores_eventos=anteriores_eventos)
+
 @srv.post("/editarEvento")
 def editar_evento():
     evento_id = request.form["evento_id"]
@@ -171,15 +186,6 @@ def get_evento(evento_token):
             is_admin = False
     print(solicitacoes)
     return fk.render_template("events/event_detail.html", usuarios=usuarios, solicitacoes=solicitacoes, is_admin=is_admin, evento=evento, url=url, num_participantes=num_participantes)
-
-@srv.post("/evento/escolher_item")
-def escolher_item():
-    evento_id = request.form.get("evento_id")
-    usuario_id = fk.session["usuario_id"]
-    item_nome = request.form.get("item_nome")
-    if evento_id and usuario_id and item_nome:
-        md.escolher_item(evento_id, usuario_id, item_nome)
-    return fk.redirect(fk.request.referrer or "/")
 
 @srv.post("/evento/solicitar")
 def solicitar_participacao():
