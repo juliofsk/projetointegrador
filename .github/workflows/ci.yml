@@ -30,8 +30,8 @@ jobs:
       - name: Preparar BD, subir Flask e E2E
         run: |
           set -e
-          rm -f focusfluir.db
+          rm -f database.db
           python -c "from app import setup_database; setup_database()"
-          python -c "from app import app; app.run(host='127.0.0.1', port=5000, debug=False, use_reloader=False)" &
+          python -c "from app import app; app.run(host='127.0.0.1', port=5050, debug=False, use_reloader=False)" &
           sleep 3
           python -m pytest e2e/ -v
