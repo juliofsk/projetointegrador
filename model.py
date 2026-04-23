@@ -111,33 +111,33 @@ def get_evento(evento_id):
 
 def usuarios_lista(evento_id):
     """Busca usuários com status=2 (confirmados) de um evento específico"""
-        conn = c.get_db_conexao()
-        pesquisar_usuarios_participantes = '''
-        SELECT usuario.id, usuario.nome, usuario.email
-        FROM usuario
-        JOIN lista ON usuario.id = lista.usuario_id
-        WHERE lista.evento_id = ?
-        AND lista.status = 2
-        '''
-        cur = conn.cursor()
-        cur.execute(pesquisar_usuarios_participantes, (evento_id,))
-        usuarios = cur.fetchall()
-        return usuarios  # Retorna lista de tuplas (id, nome, email)
+    conn = c.get_db_conexao()
+    pesquisar_usuarios_participantes = '''
+    SELECT usuario.id, usuario.nome, usuario.email
+    FROM usuario
+    JOIN lista ON usuario.id = lista.usuario_id
+    WHERE lista.evento_id = ?
+    AND lista.status = 2
+    '''
+    cur = conn.cursor()
+    cur.execute(pesquisar_usuarios_participantes, (evento_id,))
+    usuarios = cur.fetchall()
+    return usuarios  # Retorna lista de tuplas (id, nome, email)
 
 def usuarios_solicitacoes(evento_id):
     """Busca usuários com status=1 (solicitações) de um evento específico"""
-        conn = c.get_db_conexao()
-        pesquisar_usuarios_solicitacoes = '''
-        SELECT usuario.id, usuario.nome, usuario.email
-        FROM usuario
-        JOIN lista ON usuario.id = lista.usuario_id
-        WHERE lista.evento_id = ?
-        AND lista.status = 1
-        '''
-        cur = conn.cursor()
-        cur.execute(pesquisar_usuarios_solicitacoes, (evento_id,))
-        usuarios = cur.fetchall()
-        return usuarios  # Retorna lista de tuplas (id, nome, email)
+    conn = c.get_db_conexao()
+    pesquisar_usuarios_solicitacoes = '''
+    SELECT usuario.id, usuario.nome, usuario.email
+    FROM usuario
+    JOIN lista ON usuario.id = lista.usuario_id
+    WHERE lista.evento_id = ?
+    AND lista.status = 1
+    '''
+    cur = conn.cursor()
+    cur.execute(pesquisar_usuarios_solicitacoes, (evento_id,))
+    usuarios = cur.fetchall()
+    return usuarios  # Retorna lista de tuplas (id, nome, email)
 
 def is_evento_admin(evento_id, usuario_id):
         conn = c.get_db_conexao()
