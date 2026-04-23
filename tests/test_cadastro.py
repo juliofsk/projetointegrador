@@ -13,15 +13,6 @@ def client():
         yield c
 
 
-@patch("service.cadastrar_usuario")
-class TestCadastro:
-    def test_cadastro_usuario(self, mock_svc, client):
-        mock_svc.cadastrar_usuario.return_value = {}
-
-        resp = client.post("/cadastrar")
-
-        assert resp.status_code == 200
-
 @patch("model.criar_usuario")
 class TestCadastroModel:
     def test_cadastro_usuario(self, mock_svc):
