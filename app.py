@@ -161,6 +161,8 @@ def get_evento(evento_token):
     url = f'http://localhost:5050/evento/{evento_token}'
     print(evento_id)
 
+    passou = md.evento_ja_passou(evento_id)
+
     num_participantes = md.get_num_participantes(evento_id)
 
     if not evento_id:
@@ -185,7 +187,7 @@ def get_evento(evento_token):
         except AttributeError:
             is_admin = False
     print(solicitacoes)
-    return fk.render_template("events/event_detail.html", usuarios=usuarios, solicitacoes=solicitacoes, is_admin=is_admin, evento=evento, url=url, num_participantes=num_participantes)
+    return fk.render_template("events/event_detail.html", usuarios=usuarios, solicitacoes=solicitacoes, is_admin=is_admin, evento=evento, url=url, num_participantes=num_participantes, passou=passou)
 
 @srv.post("/evento/solicitar")
 def solicitar_participacao():

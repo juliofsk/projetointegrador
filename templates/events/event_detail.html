@@ -101,17 +101,20 @@
 
 <body>
 
+    
     {%if not is_admin%}
 
     <div class="container d-flex flex-row align-items-center justify-content-between mt-5 mb-5">
         <div>
             <h2 class="">{{ evento[2] }}</h2>
         </div>
+    {%if not passou%}
         <form action="/evento/solicitar" method="POST">
             <input type="hidden" name="evento_id" value="{{ evento[0] }}">
             <button class="btn btn-primary w-5 py-2 mt-3">Entrar</button>
         </form>
     </div>
+    {%endif%}
 
     {%endif%}
 
@@ -122,6 +125,7 @@
             <h2 class="">{{ evento[2] }}</h2>
         </div>
 
+        {%if not passou%}
         <div class="input-group mb-3" style="max-width:500px;">
             <input type="text" class="form-control" id="linkEvento" value="{{ url }}" readonly>
             <button class="btn btn-outline-secondary" onclick="copiar()">
@@ -145,7 +149,7 @@
         </div>
         {% include 'events/events_requests.html' %}
     </div>
-
+        {%endif%}
     {%endif%}
 
     <div class="container">

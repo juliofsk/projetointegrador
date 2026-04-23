@@ -235,3 +235,19 @@ def deletar_evento(evento_id,):
         cur.execute('DELETE FROM lista WHERE evento_id = ?', (evento_id,))
         # Deleta o evento
         cur.execute('DELETE FROM evento WHERE id = ?', (evento_id,))
+
+def evento_ja_passou(evento_id):
+    with sqlite3.connect("database.db") as conn:
+        cur = conn.cursor()
+        cur.execute('SELECT data FROM evento WHERE id = ?', (evento_id,))
+        resultado = cur.fetchone()
+
+        if resultado:
+            from datetime import datetime
+
+            data_evento = datetime.strptime(resultado[0], '%Y-%m-%d').date()
+            data_atual = datetime.now().date()
+
+            return data_evento < data_atual
+
+        return False
