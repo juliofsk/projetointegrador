@@ -1,33 +1,49 @@
 {%if not session["usuario_nome"]%}
-    <header
-    class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
-    <div class="col-md-3 mb-2 mb-md-0"> 
-        <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
-            <img class="brand-icon" width="50" height="50" src="/static/img/brand-icon.png" alt="logo rese"> 
+<header class="d-flex align-items-center justify-content-between py-3 mb-4 border-bottom px-3 px-md-5">
+    
+    <div class="d-flex align-items-center" style="flex: 1;">
+        <a href="/" class="text-decoration-none">
+            <img class="brand-icon" width="45" height="45" src="/static/img/brand-icon.png" alt="logo rese"> 
         </a>
     </div>
-    <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+
+    <ul class="nav justify-content-center">
         <li><a href="#" class="nav-link px-2 link-secondary">Home</a></li>
     </ul>
-    <div class="col-md-3 text-end">
-        <a href="/login" ><button type="button" class="btn btn-outline-primary me-2">Login</button></a>
-        <a href="/cadastrar" ><button type="button" class="btn btn-primary">Registrar-se</button></a>
+
+    <div class="d-flex justify-content-end gap-2" style="flex: 1;">
+        <a href="/login">
+            <button type="button" class="btn btn-outline-primary btn-sm">Login</button>
+        </a>
+        <a href="/cadastrar">
+            <button type="button" class="btn btn-primary btn-sm">Registrar-se</button>
+        </a>
     </div>
-    </header>
+    
+</header>
 
 {%endif%}
 
 {%if session["usuario_nome"]%}
 
-    <header
-    class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
-    <div class="col-md-3 mb-2 mb-md-0"> <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
-            <img class="brand-icon" width="50" height="50" src="/static/img/brand-icon.png" alt="logo rese"> </a> </div>
-    <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+    <header class="d-flex align-items-center justify-content-between py-3 mb-4 border-bottom px-3">
+    
+    <div class="col-auto">
+        <a href="/" class="d-flex link-body-emphasis text-decoration-none">
+            <img class="brand-icon" width="50" height="50" src="/static/img/brand-icon.png" alt="logo rese">
+        </a>
+    </div>
+
+    <ul class="nav col-auto justify-content-center">
         <li><a href="#" class="nav-link px-2 link-secondary">Home</a></li>
     </ul>
-    <div class="col-md-3 text-end"> <a href="/perfil"><img width="35" height="35" src="/static/img/person-icon.png" alt="icone perfil"></a> 
+
+    <div class="col-auto text-end">
+        <a href="/perfil">
+            <img width="35" height="35" src="/static/img/person-icon.png" alt="icone perfil">
+        </a>
     </div>
-    </header>
+
+</header>
 
 {%endif%}
