@@ -27,7 +27,11 @@ def get_home():
 
 @srv.get("/login") #Tela login
 def login_get():
-    return fk.render_template("auth/login.html")
+    erro = request.args.get("erro")
+    mensagem_erro = None
+    if erro == "1":
+        mensagem_erro = "Usuário ou senha inválidos. Tente novamente."
+    return fk.render_template("auth/login.html", error=mensagem_erro)
 
 @srv.post("/login") #Processar login
 def login_post():
@@ -41,7 +45,7 @@ def login_post():
         fk.session["usuario_email"] = usuario[2]
         return fk.redirect("/")
     else:
-        return fk.redirect("/login")
+        return fk.redirect("/login?erro=1")
     
 @srv.get("/cadastrar") #Tela cadastro
 def register_get():
@@ -142,6 +146,11 @@ def listar_eventos():
         pass
 
     return fk.render_template("events/all_events.html", proximos_eventos=proximos_eventos, anteriores_eventos=anteriores_eventos)
+
+@srv.get("/sobre")
+def get_sobre():
+
+    return fk.render_template("partials/_about.html")
 
 @srv.post("/editarEvento")
 def editar_evento():
