@@ -195,18 +195,18 @@ def filtrar_eventos_proximos(session_id):
     if not usuario_id:
         return []  # Retorna uma lista vazia se o usuário não estiver logado
     
-        conn = c.get_db_conexao()
-        cur = conn.cursor()
-        cur.execute('''
-        SELECT evento.*
-        FROM evento
-        JOIN lista ON evento.id = lista.evento_id
-        WHERE lista.usuario_id = ? AND lista.status = 2
-        ORDER BY evento.data ASC
-        LIMIT 3
-        ''', (usuario_id,))
-        eventos = cur.fetchall()
-        return eventos  # Retorna lista de eventos futuros do usuário
+    conn = c.get_db_conexao()
+    cur = conn.cursor()
+    cur.execute('''
+    SELECT evento.*
+    FROM evento
+    JOIN lista ON evento.id = lista.evento_id
+    WHERE lista.usuario_id = ? AND lista.status = 2
+    ORDER BY evento.data ASC
+    LIMIT 3
+    ''', (usuario_id,))
+    eventos = cur.fetchall()
+    return eventos  # Retorna lista de eventos futuros do usuário
 
 def solicitar_participacao(evento_id, usuario_id):
     conn = c.get_db_conexao()
