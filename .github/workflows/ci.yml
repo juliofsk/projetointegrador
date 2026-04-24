@@ -32,6 +32,6 @@ jobs:
           set -e
           rm -f database.db
           python -c "from conexao import get_db_conexao; get_db_conexao()"
-          python -c "from app import app; app.run(host='127.0.0.1', port=5050, debug=False, use_reloader=False)" &
+          python -c "from app import srv; srv.run(host='127.0.0.1', port=5050, debug=False, use_reloader=False)" &
           sleep 3
           python -m pytest e2e/ -v
