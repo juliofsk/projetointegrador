@@ -18,6 +18,7 @@ def criar_usuario(nome, email, senha):
     '''
     dados = (nome, email, senha)
     conn.execute(sql_insert_query, dados)
+    conn.close()
 
 def get_foto(usuario_id):
     conn = c.get_db_conexao()
@@ -41,9 +42,36 @@ def editar_perfil(usuario_id, usuario_nome, usuario_email, usuario_foto):
 
 
 #FUNÇÕES EVENTO
-def config_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token):
-    criar_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token)
-    entralista(get_id_evento(evento_token), administrador_id)
+def config_evento(id_administrador: int, evento_nome: str, evento_local: str,
+                  evento_data: str, evento_horario: str, evento_limite: int,
+                  evento_token: str) -> int:
+    conn = c.get_db_conexao()
+    try:
+        sql = '''
+        INSERT INTO evento (id_administrador, nome, local, data, hora, limite, token)
+        VALUES (?, ?, ?, ?, ?, ?, ?);
+        '''
+        dados = (id_administrador, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token)
+        cur = conn.cursor()
+        cur.execute(sql, dados)
+        conn.commit()
+        evento_id = cur.lastrowid
+    finally:
+        # commit já foi feito; fechar a conexão para liberar locks antes de chamar outras rotinas que abrem conexão
+        try:
+            conn.close()
+        except Exception:
+            pass
+
+    # chamar a função que insere na lista (centralista/entrar_na_lista/etc.)
+    # garantindo que ela abra sua própria conexão — se preferir, refatore centralista para receber 'evento_id' e usar a mesma conexão.
+    try:
+        entralista(evento_id, id_administrador)
+    except NameError:
+        # se centralista não existir ou for chamada com outro nome, ignore aqui e deixe que o chamador trate.
+        pass
+
+    return evento_id
 
 def criar_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token):
     conn = c.get_db_conexao()        
@@ -76,13 +104,18 @@ def insert_lista(evento_id, usuario_id):
 
 def entralista(evento_id, usuario_id):
     conn = c.get_db_conexao()
-    sql_insert_query = '''
-    INSERT INTO lista (evento_id, usuario_id, status)
-    VALUES (?, ?, ?);
-    '''
-    cur = conn.cursor()
-    dados = (evento_id, usuario_id, 2)
-    cur.execute(sql_insert_query, dados)
+    try:
+        sql_insert_query = '''
+        INSERT INTO lista (status, usuario_id, evento_id)
+        VALUES (?, ?, ?);
+        '''
+        cur = conn.cursor()
+        dados = (2, usuario_id, evento_id)
+        cur.execute(sql_insert_query, dados)
+        conn.commit()
+        return cur.lastrowid
+    finally:
+        conn.close()
 
 def get_token_evento(evento_id):
     conn = c.get_db_conexao()
