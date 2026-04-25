@@ -128,7 +128,12 @@
                 </div>
             </div>
             {%endif%}
+            {%if session["usuario_nome"] and not eventos%}
 
+            <div class="col-lg-6 mx-auto">
+                <p class="fs-5 mb-4">Você não tem eventos agendados</p>
+            </div>
+            {%endif%}
             {%if session["usuario_nome"]%}
 
             {%include 'components/_event_card.html'%}
