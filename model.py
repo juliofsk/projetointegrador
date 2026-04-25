@@ -18,6 +18,7 @@ def criar_usuario(nome, email, senha):
     '''
     dados = (nome, email, senha)
     conn.execute(sql_insert_query, dados)
+    conn.commit()
     conn.close()
 
 def get_foto(usuario_id):
@@ -38,6 +39,8 @@ def editar_perfil(usuario_id, usuario_nome, usuario_email, usuario_foto):
     dados = (usuario_nome, usuario_email, usuario_foto, usuario_id)
     cur = conn.cursor()
     cur.execute(sql_update_query, dados)
+    conn.commit()
+    conn.close()
 
 
 
@@ -81,6 +84,8 @@ def criar_evento(administrador_id, evento_nome, evento_local, evento_data, event
     '''
     dados = (administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token)
     conn.execute(sql_insert_query, dados)
+    conn.commit()
+    conn.close()
 
 def editar_evento(evento_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite):
     conn = c.get_db_conexao()
@@ -92,6 +97,8 @@ def editar_evento(evento_id, evento_nome, evento_local, evento_data, evento_hora
     dados = (evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_id)
     cur = conn.cursor()
     cur.execute(sql_update_query, dados)
+    conn.commit()
+    conn.close()
 
 def insert_lista(evento_id, usuario_id):
     conn = c.get_db_conexao()
@@ -101,6 +108,8 @@ def insert_lista(evento_id, usuario_id):
     '''
     dados = (0, usuario_id, evento_id)
     conn.execute(sql_insert_query, dados)
+    conn.commit()
+    conn.close()
 
 def entralista(evento_id, usuario_id):
     conn = c.get_db_conexao()
