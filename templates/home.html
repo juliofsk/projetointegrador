@@ -3,15 +3,91 @@
 
 <head>
     {%include 'partials/_head.html'%}
+
+    <style>
+        body {
+            overflow-x: hidden;
+            /* Evita scrolls laterais estranhos durante a animação */
+        }
+
+        .hidden {
+            opacity: 0;
+            filter: blur(5px);
+            transform: translateY(30px);
+            /* Mudei para Y (baixo) para um efeito de subida */
+            transition: all 0.8s ease-out;
+            /* 'ease-out' deixa o movimento mais natural */
+        }
+
+        .show {
+            opacity: 1;
+            filter: blur(0);
+            transform: translateY(0);
+        }
+
+        #recado {
+            overflow: hidden;
+            border-right: .15em solid orange;
+            /* O cursor piscando */
+            white-space: nowrap;
+            margin: 0 auto;
+            letter-spacing: .15em;
+            animation:
+                typing 3.5s steps(40, end),
+                blink-caret .75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from {
+                width: 0
+            }
+
+            to {
+                width: 100%
+            }
+        }
+
+        @keyframes blink-caret {
+
+            from,
+            to {
+                border-color: transparent
+            }
+
+            50% {
+                border-color: transparent;
+            }
+        }
+
+        body {
+            background: linear-gradient(-45deg, #202020, #202020, #292727, #3a3a3a);
+            background-size: 400% 400%;
+            animation: gradient 10s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
 </head>
 
 <body class="container-fluid">
 
     {%include 'partials/_header.html'%}
 
-    <p class="mt-5 text-center" id="recado">Olá! Que bom ter você aqui.</p>
+    <p class="mt-5 text-center hidden" id="recado">Olá! Que bom ter você aqui.</p>
 
-    <div class="text-secondary px-4 py-5 text-center mt-5">
+    <div class="text-secondary px-4 py-5 text-center mt-5 hidden">
         <div class="py-5">
             <h1 class="display-5 fw-bold text-white">Rese</h1>
             <div class="col-lg-6 mx-auto">
@@ -30,7 +106,7 @@
         </div>
     </div>
 
-    <div class="container px-4 py-5 mt-5" id="custom-cards">
+    <div class="container px-4 py-5 mt-5 hidden" id="custom-cards">
         <div class="d-flex justify-content-between align-items-center mb-4 border-bottom">
             <h2 class="pb-2">Eventos próximos</h2>
             {%if session["usuario_nome"]%}
@@ -39,7 +115,7 @@
             </a>
             {%endif%}
         </div>
-        <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 py-5">
+        <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 py-5 hidden">
             {%if not session["usuario_nome"]%}
 
             <div class="col-lg-6 mx-auto">
@@ -61,16 +137,20 @@
         </div>
     </div>
 
-    <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel" style="margin-top: 150px; margin-bottom: 150px;">
+    <div id="carouselExampleInterval" class="carousel slide hidden" data-bs-ride="carousel"
+        style="margin-top: 150px; margin-bottom: 150px;">
         <div class="carousel-inner">
             <div class="carousel-item active" data-bs-interval="10000">
-                <img src="/static/img/carrosel-1.png" class="d-block w-100" style="height: 300px; object-fit: cover;" alt="carrosel 1">
+                <img src="/static/img/carrosel-1.png" class="d-block w-100" style="height: 300px; object-fit: cover;"
+                    alt="carrosel 1">
             </div>
             <div class="carousel-item" data-bs-interval="2000">
-                <img src="/static/img/carrosel-2.png" class="d-block w-100" style="height: 300px; object-fit: cover;" alt="carrosel 2">
+                <img src="/static/img/carrosel-2.png" class="d-block w-100" style="height: 300px; object-fit: cover;"
+                    alt="carrosel 2">
             </div>
             <div class="carousel-item">
-                <img src="/static/img/carrosel-3.png" class="d-block w-100" style="height: 300px; object-fit: cover;" alt="carrosel 3">
+                <img src="/static/img/carrosel-3.png" class="d-block w-100" style="height: 300px; object-fit: cover;"
+                    alt="carrosel 3">
             </div>
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval"
@@ -86,7 +166,7 @@
     </div>
 
 
-    <div class="px-4 py-5 my-5 text-center">
+    <div class="px-4 py-5 my-5 text-center hidden">
         <h1 class="display-5 fw-bold text-white">Comece agora</h1>
         <div class="col-lg-6 mx-auto">
             <p class="lead mb-4 text-white">Crie seu evento e transforme sua ideia em algo inesquecível! Reúna pessoas,
@@ -106,3 +186,16 @@
 </body>
 
 </html>
+
+<script>
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('show');
+            }
+        });
+    });
+
+    const hiddenElements = document.querySelectorAll('.hidden');
+    hiddenElements.forEach((el) => observer.observe(el));
+</script>

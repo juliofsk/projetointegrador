@@ -33,6 +33,15 @@
         #txLink {
             visibility: hidden;
         }
+
+        /* Seleciona o ícone de calendário e o de relógio */
+        input[type="date"]::-webkit-calendar-picker-indicator,
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            filter: invert(100%);
+            /* Transforma preto em branco */
+            cursor: pointer;
+            /* Melhora a experiência ao passar o mouse */
+        }
     </style>
 </head>
 
@@ -42,20 +51,22 @@
                 height="70">
             <h1 class="h3 mb-3 fw-normal">Criar Evento</h1>
 
-            <div class="form-floating"> <input type="text" class="form-control" id="floatingInput"
+            <div class="form-floating mb-3"> <input type="text" class="form-control" id="floatingInput"
                     placeholder="nome-evento" name="nome" maxlength="20"> <label for="floatingName">Nome</label> </div>
 
-            <div class="form-floating"> <input type="text" class="form-control" id="floatingInput"
-                    placeholder="local-evento" name="local" maxlength="20" required> <label for="floatingPlace">Local</label> </div>
+            <div class="form-floating mb-3"> <input type="text" class="form-control" id="floatingInput"
+                    placeholder="local-evento" name="local" maxlength="20" required> <label
+                    for="floatingPlace">Local</label> </div>
 
-            <div class="form-floating"> <input type="date" class="form-control" id="floatingDate"
+            <div class="form-floating mb-3"> <input type="date" class="form-control" id="floatingDate"
                     placeholder="data-evento" name="data" required> <label for="floatingDate">Data</label> </div>
 
-            <div class="form-floating"> <input type="time" class="form-control" id="floatingInput"
+            <div class="form-floating mb-3"> <input type="time" class="form-control" id="floatingInput"
                     placeholder="hora-evento" name="hora" required> <label for="floatingTime">Hora</label> </div>
 
-            <div class="form-floating"> <input type="number" class="form-control" id="floatingLimite"
-                    placeholder="limite-convidados" name="limite" min="1" max="1000"> <label for="floatingLimite">Limite de
+            <div class="form-floating mb-3"> <input type="number" class="form-control" id="floatingLimite"
+                    placeholder="limite-convidados" name="limite" min="1" max="1000"> <label for="floatingLimite">Limite
+                    de
                     convidados</label> </div>
             <button class="btn btn-primary w-100 py-2 mt-5" type="submit" value="criar">Criar</button>
         </form>
@@ -64,51 +75,51 @@
 
 </html>
 <script>
-    document.querySelector("form").addEventListener("submit", function(e) {
-    
+    document.querySelector("form").addEventListener("submit", function (e) {
+
         const nome = document.querySelector('input[name="nome"]').value.trim();
         const local = document.querySelector('input[name="local"]').value.trim();
         const data = document.querySelector('input[name="data"]').value;
         const hora = document.querySelector('input[name="hora"]').value;
         const limite = parseInt(document.querySelector('input[name="limite"]').value);
-    
+
         // nome
         if (nome.length === 0 || nome.length > 20) {
             alert("O nome do evento deve ter entre 1 e 10 caracteres.");
             e.preventDefault();
             return;
         }
-    
+
         // local
         if (local.length === 0) {
             alert("Informe o local do evento.");
             e.preventDefault();
             return;
         }
-    
+
         // data e hora obrigatórias
         if (!data || !hora) {
             alert("Informe a data e hora do evento.");
             e.preventDefault();
             return;
         }
-    
+
         // juntar data e hora
         const dataHoraEvento = new Date(data + "T" + hora);
         const agora = new Date();
-    
+
         if (dataHoraEvento <= agora) {
             alert("O evento não pode ser criado em um horário passado.");
             e.preventDefault();
             return;
         }
-    
+
         // limite convidados
         if (isNaN(limite) || limite < 1 || limite > 1000) {
             alert("O limite de convidados deve estar entre 1 e 1000.");
             e.preventDefault();
             return;
         }
-    
+
     });
-    </script>
+</script>
