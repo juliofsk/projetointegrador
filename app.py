@@ -57,9 +57,13 @@ def register_post():
     usuario_email = request.form.get("email")
     usuario_senha = request.form.get("senha")
 
-    service.cadastrar_usuario(usuario_nome, usuario_email, usuario_senha)
+    try:
+        service.cadastrar_usuario(usuario_nome, usuario_email, usuario_senha)
+    except ValueError as e:
+        # retorna a página de cadastro com a mensagem de erro (minimamente invasivo)
+        return fk.render_template("auth/register.html", error=str(e))
 
-    return fk.redirect("auth/login.html")
+    return fk.redirect("/login")
 
 @srv.get("/logout")
 def get_logout():
