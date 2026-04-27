@@ -1,90 +1,123 @@
 # Sistema de Organização de Eventos
 
-Este projeto consiste em um sistema web para organização de eventos entre amigos ou comunidades. 
-A plataforma permite criar eventos e convidar participantes.
+Sistema web para criação e gerenciamento de eventos entre amigos ou comunidades. Permite criar eventos, convidar participantes por link e gerenciar solicitações de entrada.
 
 ## Funcionalidades
 
-- Criação de eventos
-- Sistema de convite por link
-- Solicitação de entrada em eventos
-- Gerenciamento de participantes pelo administrador
+- Cadastro e autenticação de usuários
+- Criação e edição de eventos
+- Convite por link compartilhável
+- Solicitação e aprovação de participantes
+- Gerenciamento de participantes pelo administrador do evento
+- Perfil de usuário com foto
 
-## Tecnologias Utilizadas
+## Tecnologias
 
-- Python
-- Flask
+- Python 3 + Flask
 - SQLite
-- HTML
-- CSS
-- JavaScript
+- Jinja2 (templates)
+- Bootstrap 5
+- HTML / CSS / JavaScript
 
 ## Estrutura do Projeto
 
-project/
+```
+projetointegrador/
 │
-├── __pycache__/            # Cache do Python
-├── .venv/                  # Ambiente virtual Python
-├── node_modules/           # Dependências do Node (se usado)
+├── static/
+│   ├── img/                    # Imagens do sistema
+│   ├── uploads/usuarios/       # Fotos de perfil dos usuários
+│   └── style.css
 │
-├── static/                 # Arquivos estáticos
-│   ├── img/                # Imagens do sistema
-│   ├── uploads/            # Uploads dos usuários
-│   ├── style.css           # Estilo principal
-│   └── style.css.map
-│
-├── templates/              # Templates HTML (Jinja)
-│   │
-│   ├── auth/               # Autenticação
+├── templates/
+│   ├── auth/
 │   │   ├── login.html
 │   │   └── register.html
-│   │
-│   ├── components/         # Componentes reutilizáveis
-│   │   └── _event_card.html
-│   │
-│   ├── events/             # Páginas relacionadas a eventos
+│   ├── events/
+│   │   ├── all_events.html
 │   │   ├── create_event.html
 │   │   ├── edit_event.html
-│   │   ├── event_detail.html
-│   │   ├── events_list.html
-│   │   └── events_requests.html
-│   │
-│   ├── partials/           # Partes reutilizáveis da interface
-│   │   ├── _footer.html
+│   │   └── event_detail.html
+│   ├── partials/
 │   │   ├── _head.html
-│   │   └── _header.html
-│   │
-│   ├── user/               # Área do usuário
-│   │   ├── edit_profile.html
-│   │   └── profile.html
-│   │
-│   └── home.html           # Página inicial
+│   │   ├── _header.html
+│   │   └── _footer.html
+│   ├── user/
+│   │   ├── profile.html
+│   │   └── edit_profile.html
+│   ├── about.html
+│   └── home.html
 │
-├── app.py                  # Arquivo principal da aplicação Flask
-├── createdb.py             # Script para criação do banco de dados
-├── model.py                # Modelos e manipulação do banco
-├── database.db             # Banco de dados SQLite
-│
-├── package.json            # Configuração de dependências JS
-├── package-lock.json
-│
-├── anotações               # Arquivo de notas do projeto
-└── README.md               # Documentação do projeto
+├── app.py          # Rotas e controladores Flask
+├── model.py        # Funções de acesso ao banco de dados
+├── service.py      # Validações e regras de negócio
+├── conexao.py      # Configuração da conexão com o SQLite
+├── createdb.py     # Script de criação do banco de dados
+├── database.db     # Banco de dados SQLite (gerado pelo createdb.py)
+├── package.json    # Dependências JS (Bootstrap)
+└── README.md
+```
 
 ## Como Executar
 
-1. Clone o repositório
+### 1. Clone o repositório
 
+```bash
 git clone https://github.com/juliofsk/projetointegrador
+cd projetointegrador
+```
 
-2. Instale as dependências
+### 2. Crie e ative o ambiente virtual
 
-pip install flask
+```bash
+python -m venv .venv
 
-3. Execute o projeto
+# Windows
+.venv\Scripts\activate
 
+# Linux / macOS
+source .venv/bin/activate
+```
+
+### 3. Instale as dependências Python
+
+```bash
+pip install flask werkzeug
+```
+
+### 4. Crie o banco de dados
+
+```bash
+python createdb.py
+```
+
+### 5. Execute o projeto
+
+```bash
 python app.py
+```
 
-4. Acesse no navegador
+### 6. Acesse no navegador
 
-http://localhost:5000
+```
+http://localhost:5050
+```
+
+## Rotas principais
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/` | Página inicial |
+| GET/POST | `/login` | Login |
+| GET/POST | `/cadastrar` | Cadastro de usuário |
+| GET | `/logout` | Encerrar sessão |
+| GET | `/perfil` | Perfil do usuário |
+| GET/POST | `/editar-perfil` | Editar perfil |
+| GET/POST | `/criar-evento` | Criar evento |
+| GET | `/meus-eventos` | Listar eventos do usuário |
+| GET | `/evento/<token>` | Detalhe do evento |
+| POST | `/editar-evento` | Editar evento |
+| POST | `/evento/deletar` | Deletar evento |
+| POST | `/evento/solicitar` | Solicitar participação |
+| POST | `/lista/aceitar` | Aceitar solicitação |
+| POST | `/lista/recusar` | Recusar solicitação |
