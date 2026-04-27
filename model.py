@@ -1,14 +1,17 @@
 import sqlite3
 import conexao as c
+from werkzeug.security import check_password_hash
 
 #FUNÇÕES USUÁRIO
 def autenticar_usuario(login, senha):
     conn = c.get_db_conexao()
     cur = conn.cursor()
-    cur.execute('SELECT id, nome, email FROM usuario WHERE nome = ? AND senha = ?', (login, senha))
+    cur.execute('SELECT id, nome, email, senha FROM usuario WHERE nome = ?', (login,))
     usuario = cur.fetchone()
-    print(usuario)
-    return usuario  # Retorna (id, nome) ou None
+    conn.close()
+    if usuario and check_password_hash(usuario[3], senha):
+        return (usuario[0], usuario[1], usuario[2])  # id, nome, email
+    return None
 
 def criar_usuario(nome, email, senha):
     conn = c.get_db_conexao()
@@ -17,9 +20,12 @@ def criar_usuario(nome, email, senha):
     VALUES (?, ?, ?);
     '''
     dados = (nome, email, senha)
-    conn.execute(sql_insert_query, dados)
+    cur = conn.cursor()
+    cur.execute(sql_insert_query, dados)
+    usuario_id = cur.lastrowid
     conn.commit()
     conn.close()
+    return usuario_id
 
 def get_foto(usuario_id):
     conn = c.get_db_conexao()
@@ -76,17 +82,6 @@ def config_evento(id_administrador: int, evento_nome: str, evento_local: str,
 
     return evento_id
 
-def criar_evento(administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token):
-    conn = c.get_db_conexao()        
-    sql_insert_query = '''
-    INSERT INTO evento (id_administrador, nome, local, data, hora, limite, token)
-    VALUES (?, ?, ?, ?, ?, ?, ?);
-    '''
-    dados = (administrador_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_token)
-    conn.execute(sql_insert_query, dados)
-    conn.commit()
-    conn.close()
-
 def editar_evento(evento_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite):
     conn = c.get_db_conexao()
     sql_update_query = '''
@@ -97,17 +92,6 @@ def editar_evento(evento_id, evento_nome, evento_local, evento_data, evento_hora
     dados = (evento_nome, evento_local, evento_data, evento_horario, evento_limite, evento_id)
     cur = conn.cursor()
     cur.execute(sql_update_query, dados)
-    conn.commit()
-    conn.close()
-
-def insert_lista(evento_id, usuario_id):
-    conn = c.get_db_conexao()
-    sql_insert_query = '''
-    INSERT INTO lista (status, usuario_id, evento_id)
-    VALUES (?, ?, ?);
-    '''
-    dados = (0, usuario_id, evento_id)
-    conn.execute(sql_insert_query, dados)
     conn.commit()
     conn.close()
 
@@ -149,6 +133,7 @@ def get_evento(evento_id):
     conn = c.get_db_conexao()
     cur = conn.cursor()
     cur.execute('SELECT * FROM evento WHERE id = ?', (evento_id,))
+    conn.close()
     return cur.fetchone()
 
 def usuarios_lista(evento_id):
@@ -204,7 +189,7 @@ def get_status(evento_id, usuario_id):
     WHERE usuario_id = ? AND evento_id = ?
     ''', (usuario_id ,evento_id))
     status = cur.fetchone()
-    return status
+    return status[0] if status else None
 
 def filtrar_proximos_eventos(id_usuario, data):
     conn = c.get_db_conexao()
@@ -232,8 +217,7 @@ def filtrar_anteriores_eventos(id_usuario, data):
     anteriores = cur.fetchall()
     return anteriores
     
-def filtrar_eventos_proximos(session_id):
-    usuario_id = session_id
+def filtrar_tres_eventos_proximos(usuario_id):
     if not usuario_id:
         return []  # Retorna uma lista vazia se o usuário não estiver logado
     
@@ -259,16 +243,22 @@ def solicitar_participacao(evento_id, usuario_id):
     cur = conn.cursor()
     dados = (evento_id, usuario_id)
     cur.execute(sql_insert_query, dados)
+    conn.commit()
+    conn.close()
 
 def aceitar_solicitacao(evento_id, usuario_id):
     conn = c.get_db_conexao()
     cur = conn.cursor()
     cur.execute('UPDATE lista SET status = 2 WHERE evento_id = ? AND usuario_id = ?', (evento_id, usuario_id))
+    conn.commit()
+    conn.close()
 
 def recusar_solicitacao(evento_id, usuario_id):
     conn = c.get_db_conexao()
     cur = conn.cursor()
     cur.execute('DELETE FROM lista WHERE evento_id = ? AND usuario_id = ?', (evento_id, usuario_id))
+    conn.commit()
+    conn.close()
 
 def deletar_evento(evento_id,):
     conn = c.get_db_conexao()
@@ -277,6 +267,8 @@ def deletar_evento(evento_id,):
     cur.execute('DELETE FROM lista WHERE evento_id = ?', (evento_id,))
     # Deleta o evento
     cur.execute('DELETE FROM evento WHERE id = ?', (evento_id,))
+    conn.commit()
+    conn.close()
 
 def evento_ja_passou(evento_id):
     conn = c.get_db_conexao()
