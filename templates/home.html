@@ -110,7 +110,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4 border-bottom">
             <h2 class="pb-2">Eventos próximos</h2>
             {%if session["usuario_nome"]%}
-            <a href="/listarEventos">
+            <a href="/meus-eventos">
                 <h3 class="fw-bold">Ver mais</h3>
             </a>
             {%endif%}
@@ -179,7 +179,7 @@
                 conexões e destaque sua marca com uma experiência única. Não espere — faça acontecer e surpreenda todos!
             </p>
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center"> <a {%if not session["usuario_nome"]%}
-                    href="/login" {%endif%} {%if session["usuario_nome"]%} href="/criarEvento" {%endif%}>
+                    href="/login" {%endif%} {%if session["usuario_nome"]%} href="/criar-evento" {%endif%}>
                     <button type="button" class="btn btn-primary btn-lg px-4 gap-3">Criar</button></a></div>
         </div>
     </div>
