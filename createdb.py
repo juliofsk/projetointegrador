@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS evento (
 	hora NUMERIC NOT NULL,
 	limite INTEGER NOT NULL,
     token TEXT NOT NULL,
-    categoria INTEGER DEFAULT 1,
 	FOREIGN KEY (id_administrador) REFERENCES usuario (id)
 )
 ''')
@@ -23,7 +22,7 @@ CREATE TABLE IF NOT EXISTS usuario (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
 	nome TEXT NOT NULL,
 	email TEXT,
-	senha NUMERIC DEFAULT 1,
+	senha TEXT NOT NULL,
     foto TEXT 
 )
 ''')
