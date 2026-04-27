@@ -3,9 +3,9 @@ import model as md
 import secrets
 import service
 from datetime import date
+from functools import wraps
 from secrets import token_hex
-from urllib.parse import quote, unquote
-from flask import Flask, request, render_template, app
+from flask import request, render_template
 
 srv = fk.Flask(__name__)
 srv.secret_key = token_hex()
@@ -13,13 +13,20 @@ srv.secret_key = token_hex()
 UPLOAD_FOLDER = 'static/uploads/usuarios'
 srv.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if "usuario_id" not in fk.session:
+            return fk.redirect("/login")
+        return f(*args, **kwargs)
+    return decorated
+
 @srv.get("/") #Tela inicial
 def get_home():
     eventos = []
     try:
         session_id = fk.session["usuario_id"]
-        eventos = md.filtrar_eventos_proximos(session_id)
-        print(eventos)     
+        eventos = md.filtrar_tres_eventos_proximos(session_id)    
     except KeyError:
         pass
 
@@ -67,16 +74,16 @@ def register_post():
 
 @srv.get("/logout")
 def get_logout():
-    del fk.session["usuario_nome"]
+    fk.session.clear()
     return fk.redirect("/")
 
 @srv.get("/perfil")
+@login_required
 def get_perfil():
     usuario_id = fk.session["usuario_id"]
     usuario_nome = fk.session["usuario_nome"]
     usuario_email = fk.session["usuario_email"]
     usuario_foto = md.get_foto(usuario_id)
-    print(fk.session)
     try:
         usuario_nome = fk.session["usuario_nome"]
         return fk.render_template("user/profile.html", usuario_id=usuario_id, usuario_nome=usuario_nome, usuario_email=usuario_email, usuario_foto=usuario_foto)
@@ -84,40 +91,45 @@ def get_perfil():
         return fk.redirect("login")
     
 @srv.get("/edit_perfil")
+@login_required
 def get_edit_perfil():
     usuario_id = fk.session["usuario_id"]
     usuario_nome = fk.session["usuario_nome"]
     usuario_email = fk.session["usuario_email"]
     usuario_foto = md.get_foto(usuario_id)
-    print(fk.session)
     return fk.render_template("user/edit_profile.html", usuario_id=usuario_id, usuario_nome=usuario_nome, usuario_email=usuario_email, usuario_foto=usuario_foto)
 
 @srv.post("/editarperfil")
+@login_required
 def editar_perfil():
     usuario_id = fk.session["usuario_id"]
     usuario_nome = request.form["nome"]
     usuario_email = request.form["email"]
     foto = request.files.get("foto")
-    print(fk.session)
-     # Verifica se uma nova foto foi enviada
-    if foto and foto.filename != "":
-        # Define o caminho para salvar a foto
-        foto_path = f"{UPLOAD_FOLDER}/{usuario_id}.png"
-        foto.save(foto_path)  # Salva a foto no servidor
-        foto_rel_path = f"uploads/usuarios/{usuario_id}.png" 
-    else:
-        # Mantém a foto atual se nenhuma nova foto for enviada
-        foto_rel_path = md.get_foto(usuario_id)
 
-    md.editar_perfil(usuario_id, usuario_nome, usuario_email, foto.filename)
+    if foto and foto.filename != "":
+        foto_path = f"{UPLOAD_FOLDER}/{usuario_id}.png"
+        foto.save(foto_path)
+        nome_foto = foto.filename  # nova foto enviada
+    else:
+        nome_foto = md.get_foto(usuario_id)  # mantém a foto atual do banco
+
+    md.editar_perfil(usuario_id, usuario_nome, usuario_email, nome_foto)  # <- corrigido
     fk.session["usuario_nome"] = usuario_nome
-    return fk.render_template("user/profile.html", arq_foto=foto_rel_path)
+
+    foto_rel_path = f"uploads/usuarios/{usuario_id}.png" if nome_foto else None
+    return fk.render_template("user/profile.html", 
+                               usuario_nome=usuario_nome,
+                               usuario_email=usuario_email,
+                               usuario_foto=foto_rel_path)
 
 @srv.get("/criarEvento")
+@login_required
 def get_criar_evento():
     return fk.render_template("events/create_event.html")
 
 @srv.post("/criarEvento")
+@login_required
 def post_evento():
     administrador_id = fk.session.get("usuario_id")
     if not administrador_id:
@@ -157,6 +169,7 @@ def get_sobre():
     return fk.render_template("partials/_about.html")
 
 @srv.post("/editarEvento")
+@login_required
 def editar_evento():
     evento_id = request.form["evento_id"]
     evento_nome = request.form["nome"]
@@ -164,6 +177,16 @@ def editar_evento():
     evento_data = request.form["data"]
     evento_horario = request.form["hora"]
     evento_limite = request.form["limite"]
+
+    usuario_id = fk.session["usuario_id"]
+
+    if not evento_id or not usuario_id:
+        return fk.redirect("/")
+
+    # verifica se quem está pedindo é realmente o admin
+    if not md.is_evento_admin(evento_id, usuario_id):
+        return "Acesso negado", 403  # ou redireciona com mensagem de erro
+
     md.editar_evento(evento_id, evento_nome, evento_local, evento_data, evento_horario, evento_limite)
     
     return fk.redirect(f"/evento/{md.get_token_evento(evento_id)}")
@@ -172,7 +195,6 @@ def editar_evento():
 def get_evento(evento_token):
     evento_id = md.get_id_evento(evento_token)
     url = f'http://localhost:5050/evento/{evento_token}'
-    print(evento_id)
 
     passou = md.evento_ja_passou(evento_id)
 
@@ -192,17 +214,17 @@ def get_evento(evento_token):
     except AttributeError:
         solicitacoes = []
     # verifica se o usuário atual é administrador do evento
-    usuario_id = fk.session["usuario_id"]
+    usuario_id = fk.session.get("usuario_id")
     is_admin = False
     if usuario_id:
         try:
             is_admin = md.is_evento_admin(evento_id, usuario_id)
         except AttributeError:
             is_admin = False
-    print(solicitacoes)
     return fk.render_template("events/event_detail.html", usuarios=usuarios, solicitacoes=solicitacoes, is_admin=is_admin, evento=evento, url=url, num_participantes=num_participantes, passou=passou)
 
 @srv.post("/evento/solicitar")
+@login_required
 def solicitar_participacao():
     evento_id = request.form.get("evento_id")
     usuario_id = fk.session["usuario_id"]
@@ -212,6 +234,7 @@ def solicitar_participacao():
     return fk.redirect(fk.request.referrer or "/")
 
 @srv.post("/lista/aceitar")
+@login_required
 def aceitar_solicitacao():
     evento_id = request.form.get("evento_id")
     usuario_id = request.form.get("usuario_id")
@@ -220,6 +243,7 @@ def aceitar_solicitacao():
     return fk.redirect(fk.request.referrer or "/")
 
 @srv.post("/lista/recusar")
+@login_required
 def recusar_solicitacao():
     evento_id = request.form.get("evento_id")
     usuario_id = request.form.get("usuario_id")
@@ -228,10 +252,20 @@ def recusar_solicitacao():
     return fk.redirect(fk.request.referrer or "/")
 
 @srv.post("/evento/deletar")
+@login_required
 def deletar_evento():
     evento_id = request.form.get("evento_id")
-    if evento_id:
-        md.deletar_evento(evento_id,)
+    usuario_id = fk.session["usuario_id"]
+    
+    if not evento_id or not usuario_id:
+        return fk.redirect("/")
+
+    # verifica se quem está pedindo é realmente o admin
+    if not md.is_evento_admin(evento_id, usuario_id):
+        return "Acesso negado", 403  # ou redireciona com mensagem de erro
+    
+    md.deletar_evento(evento_id,)
+    
     return fk.redirect("/")
 
 
