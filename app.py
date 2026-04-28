@@ -169,6 +169,7 @@ def get_evento(evento_token):
     if usuario_id:
         import model as md
         is_admin = md.is_admin_evento(evento["id"], usuario_id)
+        adm_evento = md.get_id_administrador_evento(evento["id"])
 
     url = f'http://localhost:5050/evento/{evento_token}'
     return fk.render_template("events/event_detail.html",
@@ -178,6 +179,7 @@ def get_evento(evento_token):
                                num_participantes=evento["num_participantes"],
                                passou=evento["passou"],
                                is_admin=is_admin,
+                               adm_evento=adm_evento,
                                url=url)
 
 

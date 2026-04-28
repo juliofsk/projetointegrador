@@ -128,76 +128,71 @@
 
     {%endif%}
 
-    {% if is_admin %}
     <div class="container mt-5 mb-5">
 
-        <div class="d-flex align-items-center justify-content-between mb-4">
-            <h2 class="m-0">{{ evento[2] }}</h2>
+    {% if is_admin %}
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h2 class="m-0">{{ evento[2] }}</h2>
 
-            <div class="d-flex gap-3 align-items-center">
-                {% if not passou %}
-                <div class="input-group d-none d-md-flex" style="max-width:250px;">
-                    <input type="text" class="form-control bg-dark text-white border-secondary" id="linkEvento"
-                        value="{{ url }}" readonly>
-                    <button class="btn btn-outline-secondary" onclick="copiar()">
-                        <i class="bi bi-clipboard"></i>
-                    </button>
-                </div>
-
-                <button class="btn btn-link text-secondary fs-4 p-0" title="Configurar" data-bs-toggle="modal"
-                    data-bs-target="#modalConfigEvento">
-                    <i class="bi bi-gear-fill"></i>
+        <div class="d-flex gap-3 align-items-center">
+            {% if not passou %}
+            <div class="input-group d-none d-md-flex" style="max-width:250px;">
+                <input type="text" class="form-control bg-dark text-white border-secondary" id="linkEvento" value="{{ url }}" readonly>
+                <button class="btn btn-outline-secondary" onclick="copiar()">
+                    <i class="bi bi-clipboard"></i>
                 </button>
-
-                <form action="/evento/deletar" method="POST"
-                    onsubmit="return confirm('Tem certeza que deseja deletar este evento? Esta ação não pode ser desfeita.');">
-                    <input type="hidden" name="evento_id" value="{{ evento[0] }}">
-                    <button type="submit" class="btn btn-link text-danger fs-4 p-0" title="Deletar Evento">
-                        <i class="bi bi-trash3-fill"></i>
-                    </button>
-                </form>
-                {% else %}
-                <span class="badge bg-secondary">Evento Encerrado</span>
-                {% endif %}
             </div>
-        </div>
 
-        <div class="card border-0 p-4 mb-5" style="background-color: #2a2a2a; border-radius: 15px;">
-            <div class="row g-3">
-                <div class="col-6 col-md-3">
-                    <small class="d-block text-secondary text-uppercase fw-bold"
-                        style="font-size: 0.7rem;">Local</small>
-                    <span class="text-white"><i class="bi bi-geo-alt me-1"></i> {{ evento[3] }}</span>
-                </div>
-                <div class="col-6 col-md-3">
-                    <small class="d-block text-secondary text-uppercase fw-bold" style="font-size: 0.7rem;">Data</small>
-                    <span class="text-white"><i class="bi bi-calendar-event me-1"></i> {{ evento[4] }}</span>
-                </div>
-                <div class="col-6 col-md-2">
-                    <small class="d-block text-secondary text-uppercase fw-bold" style="font-size: 0.7rem;">Hora</small>
-                    <span class="text-white"><i class="bi bi-clock me-1"></i> {{ evento[5] }}</span>
-                </div>
-                <div class="col-6 col-md-4">
-                    <small class="d-block text-secondary text-uppercase fw-bold"
-                        style="font-size: 0.7rem;">Participantes</small>
-                    <div class="progress mt-1" style="height: 6px; background-color: #444;">
-                        {% set percent = (usuarios|length / evento[6] * 100) if evento[6] > 0 else 0 %}
-                        <div class="progress-bar" style="width: {{ percent }}%; background-color: #ff5c7c;"></div>
-                    </div>
-                    <small class="text-white">{{ usuarios|length }} de {{ evento[6] }} confirmados</small>
-                </div>
-            </div>
-        </div>
+            <button class="btn btn-link text-secondary fs-4 p-0" title="Configurar" data-bs-toggle="modal" data-bs-target="#modalConfigEvento">
+                <i class="bi bi-gear-fill"></i>
+            </button>
 
-        {% if not passou %}
-        <div class="mb-5">
-            <h3 class="h5 text-secondary mb-3">Solicitações Pendentes</h3>
-            {% include 'partials/_requests.html' %}
+            <form action="/evento/deletar" method="POST" onsubmit="return confirm('Tem certeza?');">
+                <input type="hidden" name="evento_id" value="{{ evento[0] }}">
+                <button type="submit" class="btn btn-link text-danger fs-4 p-0">
+                    <i class="bi bi-trash3-fill"></i>
+                </button>
+            </form>
+            {% else %}
+            <span class="badge bg-secondary">Evento Encerrado</span>
+            {% endif %}
         </div>
-        {% endif %}
-
     </div>
     {% endif %}
+
+    <div class="card border-0 p-4 mb-5" style="background-color: #2a2a2a; border-radius: 15px;">
+        <div class="row g-3">
+            <div class="col-6 col-md-3">
+                <small class="d-block text-secondary text-uppercase fw-bold" style="font-size: 0.7rem;">Local</small>
+                <span class="text-white"><i class="bi bi-geo-alt me-1"></i> {{ evento[3] }}</span>
+            </div>
+            <div class="col-6 col-md-3">
+                <small class="d-block text-secondary text-uppercase fw-bold" style="font-size: 0.7rem;">Data</small>
+                <span class="text-white"><i class="bi bi-calendar-event me-1"></i> {{ evento[4] }}</span>
+            </div>
+            <div class="col-6 col-md-2">
+                <small class="d-block text-secondary text-uppercase fw-bold" style="font-size: 0.7rem;">Hora</small>
+                <span class="text-white"><i class="bi bi-clock me-1"></i> {{ evento[5] }}</span>
+            </div>
+            <div class="col-6 col-md-4">
+                <small class="d-block text-secondary text-uppercase fw-bold" style="font-size: 0.7rem;">Participantes</small>
+                <div class="progress mt-1" style="height: 6px; background-color: #444;">
+                    {% set percent = (usuarios|length / evento[6] * 100) if evento[6] > 0 else 0 %}
+                    <div class="progress-bar" style="width: {{ percent }}%; background-color: #ff5c7c;"></div>
+                </div>
+                <small class="text-white">{{ usuarios|length }} de {{ evento[6] }} confirmados</small>
+            </div>
+        </div>
+    </div>
+
+    {% if is_admin and not passou %}
+    <div class="mb-5">
+        <h3 class="h5 text-secondary mb-3">Solicitações Pendentes</h3>
+        {% include 'partials/_requests.html' %}
+    </div>
+    {% endif %}
+
+</div>
 
     <div class="container">
         <div>
@@ -214,9 +209,11 @@
                     {{ usuario[1] }}
                 </div>
                 <div class="col d-flex justify-content-end">
+                    {% if adm_evento == usuario[0] %}
                     <div>
-                        <input type="checkbox">
+                        <i class="bi bi-star-fill text-warning"></i>
                     </div>
+                    {% endif %}
                 </div>
             </div>
             {%endfor%}
