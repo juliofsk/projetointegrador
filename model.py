@@ -27,6 +27,7 @@ def criar_usuario(nome, email, senha):
     )
     conn.commit()
     conn.close()
+    return cur.lastrowid
 
 def get_foto(usuario_id):
     """Retorna o caminho da foto do usuário ou None se não tiver foto cadastrada."""
@@ -126,6 +127,15 @@ def is_admin_evento(evento_id, usuario_id):
     conn.close()
     return resultado[0] == usuario_id if resultado else False
 
+def get_id_administrador_evento(evento_id):
+    """Retorna o id do administrador do evento."""
+    conn = c.get_db_conexao()
+    cur = conn.cursor()
+    cur.execute('SELECT id_administrador FROM evento WHERE id = ?', (evento_id,))
+    resultado = cur.fetchone()
+    conn.close()
+    return resultado[0] if resultado else None
+
 def evento_ja_passou(evento_id):
     """Retorna True se a data do evento já passou."""
     conn = c.get_db_conexao()
@@ -211,6 +221,15 @@ def get_participantes(evento_id):
     resultado = cur.fetchall()
     conn.close()
     return resultado
+
+def get_limite_evento(evento_id):
+    """Retorna o limite de participantes do evento."""
+    conn = c.get_db_conexao()
+    cur = conn.cursor()
+    cur.execute('SELECT limite FROM evento WHERE id = ?', (evento_id,))
+    resultado = cur.fetchone()
+    conn.close()
+    return resultado[0] if resultado else None
 
 def get_solicitacoes(evento_id):
     """Retorna lista de (id, nome, email) dos usuários com solicitação pendente (status=1)."""
