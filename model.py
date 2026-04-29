@@ -321,3 +321,23 @@ def nome_already_exists(nome, exclude_user_id=None):
     resultado = cur.fetchone()
     conn.close()
     return resultado is not None
+
+def usuario_esta_no_evento(evento_token, usuario_id):
+    """Verifica se o usuário é participante confirmado do evento."""
+    evento_id = get_id_evento(evento_token)
+    if not evento_id:
+        return False
+    status = get_status_usuario(evento_id, usuario_id)
+    return status == 2
+
+def ja_solicitou_participacao(evento_id, usuario_id):
+    """Verifica se o usuário já solicitou participação no evento."""
+    conn = c.get_db_conexao()
+    cur = conn.cursor()
+    cur.execute(
+        'SELECT id FROM lista WHERE evento_id = ? AND usuario_id = ?',
+        (evento_id, usuario_id)
+    )
+    resultado = cur.fetchone()
+    conn.close()
+    return resultado is not None

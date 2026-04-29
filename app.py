@@ -166,6 +166,8 @@ def get_evento(evento_token):
     
     adm_evento = None
 
+    esta_no_evento = md.usuario_esta_no_evento(evento_token, fk.session.get("usuario_id"))
+
     usuario_id = fk.session.get("usuario_id")
     is_admin = False
     if usuario_id:
@@ -182,6 +184,7 @@ def get_evento(evento_token):
                                passou=evento["passou"],
                                is_admin=is_admin,
                                adm_evento=adm_evento,
+                               esta_no_evento=esta_no_evento,
                                url=url)
 
 

@@ -185,6 +185,8 @@ def solicitar_participacao(evento_id, usuario_id):
     """
     Cria uma solicitação de participação se o usuário ainda não estiver confirmado.
     """
+    if md.ja_solicitou_participacao(evento_id, usuario_id):
+        raise ValueError("Você já solicitou participação neste evento.")
     if md.get_status_usuario(evento_id, usuario_id) == 2:
         raise ValueError("Você já é participante deste evento.")
     if len(md.get_participantes(evento_id)) >= md.get_limite_evento(evento_id):

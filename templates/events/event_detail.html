@@ -119,7 +119,7 @@
             <h2 class="">{{ evento[2] }}</h2>
         </div>
         {%if not passou%}
-        {% if session.get("usuario_id") %}
+        {% if session.get("usuario_id") and esta_no_evento != 2 %}
         <form action="/evento/solicitar" method="POST">
             <input type="hidden" name="evento_id" value="{{ evento[0] }}">
             <button class="btn btn-primary w-5 py-2 mt-3">Entrar</button>
