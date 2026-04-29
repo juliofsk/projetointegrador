@@ -163,6 +163,8 @@ def get_evento(evento_token):
     evento = service.get_evento(evento_token)
     if not evento:
         return "Evento não encontrado", 404
+    
+    adm_evento = None
 
     usuario_id = fk.session.get("usuario_id")
     is_admin = False

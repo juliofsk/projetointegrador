@@ -41,6 +41,10 @@ def cadastrar_usuario(nome, email, senha):
         raise ValueError("A senha do usuário deve ter no máximo 20 caracteres.")
     if "@" not in email or "." not in email:
         raise ValueError("O email do usuário deve ser válido.")
+    if md.email_already_exists(email):
+        raise ValueError("O email do usuário já está em uso.")
+    if md.nome_already_exists(nome):
+        raise ValueError("O nome do usuário já está em uso.")
     senha_hash = generate_password_hash(senha)
     usuario_id = md.criar_usuario(nome, email, senha_hash)
     # Gerar avatar padrão
@@ -69,6 +73,10 @@ def editar_perfil(usuario_id, nome, email, foto_arquivo, upload_folder):
     Recebe o objeto de arquivo enviado pelo form e o caminho da pasta de uploads.
     Retorna o caminho relativo da foto para exibição.
     """
+    if md.email_already_exists(email, exclude_user_id=usuario_id):
+        raise ValueError("O email do usuário já está em uso.")
+    if md.nome_already_exists(nome, exclude_user_id=usuario_id):
+        raise ValueError("O nome do usuário já está em uso.")
     if foto_arquivo and foto_arquivo.filename != "":
         foto_arquivo.save(f"{upload_folder}/{usuario_id}.png")
         nome_foto = foto_arquivo.filename
@@ -105,6 +113,16 @@ def editar_evento(evento_id, usuario_id, nome, local, data, hora, limite):
     Lança PermissionError se o usuário não for o administrador.
     Retorna o token do evento para redirecionamento.
     """
+    if not nome or not local or not data or not hora or not limite:
+        raise ValueError("Todos os campos do evento devem ser preenchidos.")
+    if len(nome) > 20:
+        raise ValueError("O nome do evento deve ter no máximo 20 caracteres.")
+    if len(local) > 30:
+        raise ValueError("O local do evento deve ter no máximo 30 caracteres.")
+    if data < md.get_data_atual():
+        raise ValueError("A data do evento não pode ser no passado.")
+    if hora < md.get_hora_atual():
+        raise ValueError("A hora do evento não pode ser no passado.")
     if not md.is_admin_evento(evento_id, usuario_id):
         raise PermissionError("Apenas o administrador pode editar o evento.")
     md.editar_evento(evento_id, nome, local, data, hora, limite)
@@ -167,16 +185,16 @@ def solicitar_participacao(evento_id, usuario_id):
     """
     Cria uma solicitação de participação se o usuário ainda não estiver confirmado.
     """
-    if not md.get_status_usuario(evento_id, usuario_id) == 2:
+    if md.get_status_usuario(evento_id, usuario_id) == 2:
         raise ValueError("Você já é participante deste evento.")
-    if md.get_participantes(evento_id) >= md.get_limite_evento(evento_id):
+    if len(md.get_participantes(evento_id)) >= md.get_limite_evento(evento_id):
         raise ValueError("O limite de participantes deste evento já foi atingido.")
     md.solicitar_participacao(evento_id, usuario_id)    
  
  
 def aceitar_solicitacao(evento_id, usuario_id):
     """Aprova a solicitação de participação de um usuário."""
-    if md.get_participantes(evento_id) >= md.get_limite_evento(evento_id):
+    if len(md.get_participantes(evento_id)) >= md.get_limite_evento(evento_id):
         raise ValueError("O limite de participantes deste evento já foi atingido.")
     md.aceitar_solicitacao(evento_id, usuario_id)
  

@@ -119,11 +119,18 @@
             <h2 class="">{{ evento[2] }}</h2>
         </div>
         {%if not passou%}
+        {% if session.get("usuario_id") %}
         <form action="/evento/solicitar" method="POST">
             <input type="hidden" name="evento_id" value="{{ evento[0] }}">
             <button class="btn btn-primary w-5 py-2 mt-3">Entrar</button>
         </form>
     </div>
+        {% endif %}
+        {% if not session.get("usuario_id") %}
+        <div>
+            <a href="/login" class="btn btn-primary w-5 py-2 mt-3">Entrar</a>
+        </div>
+        {%endif%}
     {%endif%}
 
     {%endif%}
@@ -245,4 +252,20 @@
     window.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('loaded');
     });
+
+    function copiar() {
+    // Seleciona o input pelo ID
+    var copyText = document.getElementById("linkEvento");
+
+    // Seleciona o conteúdo do texto
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); // Para dispositivos móveis
+
+    // Copia para a área de transferência usando a API moderna
+    navigator.clipboard.writeText(copyText.value).then(() => {
+        alert("Link copiado com sucesso!");
+    }).catch(err => {
+        console.error('Erro ao copiar: ', err);
+    });
+}
 </script>

@@ -54,3 +54,47 @@
 
     </form>
 </div>
+
+<script>
+// Usamos um seletor mais específico ou pegamos pelo ID
+const formEditar = document.querySelector('form[action="/editar-evento"]');
+
+if (formEditar) {
+    formEditar.addEventListener("submit", function (e) {
+        // Buscamos os inputs DENTRO deste formulário específico
+        const nome = this.querySelector('input[name="nome"]').value.trim();
+        const local = this.querySelector('input[name="local"]').value.trim();
+        const data = this.querySelector('input[name="data"]').value;
+        const hora = this.querySelector('input[name="hora"]').value;
+        const limite = parseInt(this.querySelector('input[name="limite"]').value);
+
+        if (nome.length === 0 || nome.length > 20) {
+            alert("O nome do evento deve ter entre 1 e 20 caracteres.");
+            e.preventDefault();
+            return;
+        }
+
+        if (!data || !hora) {
+            alert("Informe a data e hora do evento.");
+            e.preventDefault();
+            return;
+        }
+
+        // Validação de data retroativa
+        const dataHoraEvento = new Date(`${data}T${hora}`);
+        const agora = new Date();
+
+        if (dataHoraEvento <= agora) {
+            alert("O evento não pode ser editado para um horário passado.");
+            e.preventDefault();
+            return;
+        }
+
+        if (isNaN(limite) || limite < 1 || limite > 1000) {
+            alert("O limite de convidados deve estar entre 1 e 1000.");
+            e.preventDefault();
+            return;
+        }
+    });
+}
+</script>

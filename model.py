@@ -289,3 +289,35 @@ def recusar_solicitacao(evento_id, usuario_id):
     )
     conn.commit()
     conn.close()
+
+
+# === TEMPO ===
+def get_data_atual():
+    """Retorna a data atual no formato 'YYYY-MM-DD'."""
+    return datetime.now().date().isoformat()
+
+def get_hora_atual():
+    """Retorna a hora atual no formato 'HH:MM'."""
+    return datetime.now().time().strftime('%H:%M')
+
+# === AUTENTICAÇÃO ===
+def email_already_exists(email):
+    """Verifica se um email já está cadastrado no banco."""
+    conn = c.get_db_conexao()
+    cur = conn.cursor()
+    cur.execute('SELECT id FROM usuario WHERE email = ?', (email,))
+    resultado = cur.fetchone()
+    conn.close()
+    return resultado is not None
+
+def nome_already_exists(nome, exclude_user_id=None):
+    """Verifica se um nome já está cadastrado no banco."""
+    conn = c.get_db_conexao()
+    cur = conn.cursor()
+    if exclude_user_id:
+        cur.execute('SELECT id FROM usuario WHERE nome = ? AND id != ?', (nome, exclude_user_id))
+    else:
+        cur.execute('SELECT id FROM usuario WHERE nome = ?', (nome,))
+    resultado = cur.fetchone()
+    conn.close()
+    return resultado is not None
